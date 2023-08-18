@@ -5,17 +5,33 @@ import (
 	"os"
 	"net/http"
 	"net/url"
+	"encoding/json"
 	"io"
 )
 
+type PagingInfo struct {
+	Cursors struct {
+		Before string `json:"before"`
+		After string `json:"after"`
+	}
+	Next string `json:"next"`
+}
+
+type Campaign struct {
+	ID string `json:"id"`
+}
+type CampaignEdge []Campaign
+
+type GetCampaignsResponse struct {
+	Data CampaignEdge
+	Paging PagingInfo
+}
+
 // Global variables
 func main() {
-	fmt.Println("Lets do this!!!")
+
 	account_id := os.Getenv("ACCOUNT_ID")
-	
-	fmt.Println(account_id)
 	access_token := os.Getenv("ACCESS_TOKEN")
-	fmt.Println(access_token)
 
 	// Extract all campaigns
 	base_url := "https://graph.facebook.com/v17.0/" + account_id
@@ -37,12 +53,21 @@ func main() {
 		fmt.Println(err)
 	}
 	defer resp.Body.Close()
-	
-	body, err := io.ReadAll(resp.Body)
+
+	// Print body content
+	content, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("There was an error parsing the response body!")
-		fmt.Println(err)
+		//TODO: handle
 	}
-	fmt.Printf("%s\n", body)
-	fmt.Println("We got liftoff!")
+	
+	var result GetCampaignsResponse
+	if err := json.Unmarshal(content, &result); err != nil {
+		fmt.Println("Can not unmarshal JSON")
+	}
+	fmt.Println(result.Data)
+	fmt.Println(result.Paging.Next)
+	fmt.Printf("%T\n", result.Data)
+	for i := range result.Data {
+		fmt.Printf("%T\n", i)
+	}
 }

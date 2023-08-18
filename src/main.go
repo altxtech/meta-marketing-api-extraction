@@ -56,10 +56,26 @@ func main() {
 	var result GetCampaignsResponse
 	json.NewDecoder(resp.Body).Decode(&result)
 
-	fmt.Println(result.Data)
-	fmt.Println(result.Paging.Next)
-	fmt.Printf("%T\n", result.Data)
-	for i := range result.Data {
-		fmt.Printf("%T\n", i)
+	for result.Paging.Next != nil {
+		// Create request for next page
+		req, err = http.NewRequest("GET", result.Paging.Next, nil) // The next URL already inclues all necessary parameters
+		if err != nil {
+			fmt.Println("Error building request")
+		}
+		// Execute request
+		req, err = http.DefaultClient.Do(req)
+		if err != nil {
+			//TODO: Handle
+		}
+
+		// Execute it
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			fmt.Println("There was an error making the request!")
+			fmt.Println(err)
+		}
+		defer resp.Body.Close()
+
+		var result GetCampaignsResponse
 	}
 }

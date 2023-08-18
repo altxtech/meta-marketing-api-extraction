@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"encoding/json"
-	"io"
 )
 
 type PagingInfo struct {
@@ -54,16 +53,9 @@ func main() {
 	}
 	defer resp.Body.Close()
 
-	// Print body content
-	content, err := io.ReadAll(resp.Body)
-	if err != nil {
-		//TODO: handle
-	}
-	
 	var result GetCampaignsResponse
-	if err := json.Unmarshal(content, &result); err != nil {
-		fmt.Println("Can not unmarshal JSON")
-	}
+	json.NewDecoder(resp.Body).Decode(&result)
+
 	fmt.Println(result.Data)
 	fmt.Println(result.Paging.Next)
 	fmt.Printf("%T\n", result.Data)

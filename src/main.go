@@ -51,39 +51,36 @@ func save_data(data map[string]interface{}, name string) error {
 }
 
 // Global variables
-func main() {
-	// Load environment
-	godotenv.Load("../.env")
+func extract(edge string, fields []string) error {
+
 	account_id := os.Getenv("ACCOUNT_ID")
-	fmt.Println("Account id: ", account_id)
 	access_token := os.Getenv("ACCESS_TOKEN")
-	fmt.Println("Access token: ", access_token)
 
 	// Build the requests
-	base_url := "https://graph.facebook.com/v17.0/" + account_id
-	campaigns_path := "/campaigns"
+	base_url := "https://graph.facebook.com/v17.0/" + account_id + edge
 
-	req, err := http.NewRequest("GET", base_url + campaigns_path, nil)
+	req, err := http.NewRequest("GET", base_url + edge, nil)
 	if err != nil {
-		// TODO: Handle
+		return err
 	}
 	req.URL.RawQuery = url.Values{
 		"access_token": { access_token },
 		"limit": { "100" },
 		"date_preset": { "maximum" },
+		"fields": fields,
 	}.Encode()
 
 	// Execute it
 	page_counter := 1
 	data, err := exec_request(*req)
 	if err != nil {
-		//TODO: Handle
+		return err
 	}
 	// Save the results
 	filename := fmt.Sprintf("page_%d.json", page_counter)
 	err = save_data(data, filename)
 	if err != nil {
-		//TODO: handle
+		return err
 	}
 	after_cursor := data["paging"].(map[string]interface{})["cursors"].(map[string]interface{})["after"]
 
@@ -96,20 +93,36 @@ func main() {
 			"access_token": { access_token },
 			"limit": { "100" },
 			"date_preset": { "maximum" },
+			"fields": fields,
 			"after": { after_cursor.(string) },
 		}.Encode()
 
 		// Execute it
 		data, err = exec_request(*req)
 		if err != nil {
-			//TODO: Handle
+			return err
 		}
 		// Save the results
 		filename = fmt.Sprintf("page_%d.json", page_counter)
 		err = save_data(data, filename)
 		if err != nil {
-			//TODO: handle
+			return err
 		}
 		after_cursor = data["paging"].(map[string]interface{})["cursors"].(map[string]interface{})["after"]
+	}
+	return nil
+}
+
+func main() {
+	// Load environment
+	godotenv.Load("../.env")
+
+	// Extract campaigns
+	fmt.Println("Extracting campaigns...")
+	campaign_fields := []string{"id", "account_id", "name"}
+	err := extract("/campaigns", campaign_fields)
+	if err != nil {
+		//TODO: Handle
+		fmt.Println(err)
 	}
 }

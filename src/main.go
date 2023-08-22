@@ -39,7 +39,7 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 	return data, nil
 }
 
-func save_data(data map[string]interface{}, name string, prefix string) error {
+func save_data(data []interface{}, name string, prefix string) error {
 
 	// Create directories if then don't exist
 	dirPath := filepath.Dir(prefix + name)
@@ -61,80 +61,65 @@ func save_data(data map[string]interface{}, name string, prefix string) error {
 	return nil
 }
 
-// Global variables
-func extract(edge string, fields []string) error {
+func build_request(edge string, params url.Values, fields []string) (*http.Request, error) {
 	
-	account_id := os.Getenv("ACCOUNT_ID")
-	access_token := os.Getenv("ACCESS_TOKEN")
-
-	// Build the requests
-	fmt.Println("Building request")
-	
-	req_url := "https://graph.facebook.com/v17.0/" + account_id + "/campaigns"
-
-	req, err := http.NewRequest("GET", req_url, nil)
-	if err != nil {
-		return err
-	}
-	
-	// Prepare query params
-	fmt.Println("Preparing query params")
-	
-	params := url.Values{}
-	params.Add("access_token", access_token)
-	params.Add("limit", "100")
-	params.Add("date_preset", "maximum")
-	for i := range(fields){
+	baseUrl := "https://graph.facebook.com/v17.0/" + os.Getenv("ACCOUNT_ID") + edge
+	// Add access Token to params
+	params.Set("access_token", os.Getenv("ACCESS_TOKEN"))
+	// Add fields to params
+	for i := range(fields) {
 		params.Add("fields", fields[i])
 	}
+	// Build the request
+	var req *http.Request
+	var err error
+	req, err = http.NewRequest("GET", baseUrl, nil)
+	if err != nil {
+		return req, err
+	}
+
 	req.URL.RawQuery = params.Encode()
 
-	// Execute it
-	page_counter := 1
-	fmt.Printf("Extractint page %d\n", page_counter)
+	return req, nil
+}
+
+func extract(req *http.Request, prefix string) error {
 	
-	data, err := exec_request(*req)
-	if err != nil {
-		return err
-	}
-
-	// Save the results
+	// Variables
 	h := md5.New()
-	io.WriteString(h, req.URL.String())
-	filename := fmt.Sprintf("%x.json", h.Sum(nil))
-	prefix := fmt.Sprintf("data/%s/", edge)
-	err = save_data(data, filename, prefix)
-	if err != nil {
-		return err
-	}
-	next := data["paging"].(map[string]interface{})["next"]
+	var filename string
 
-	// Now paginate :D
-	for next != nil {
-		page_counter += 1
-		// Update the query paramenters
-		fmt.Printf("Extracting page %d - %s\n", page_counter, next)
+	for page := 1; true; page++{
+
+		// Execute the request
+		fmt.Printf("Extractint page %d\n", page)
+		data, err := exec_request(*req)
+		if err != nil {
+			return err
+		}
+
+		// Save the results
+		io.WriteString(h, req.URL.String())
+		filename = fmt.Sprintf("%x.json", h.Sum(nil))
+		err = save_data(data["data"].([]interface{}), filename, prefix)
+		if err != nil {
+			return err
+		}
+
+		// Check if there is a nex page
+		next := data["paging"].(map[string]interface{})["next"]
+		if next == nil {
+			// End extraction if not
+			break
+		}
 		
+		// Build next request
 		req, err = http.NewRequest("GET", next.(string), nil)
 		if err != nil {
-			fmt.Println("Error preparing request: ", err)
+			fmt.Println("Error building request: ", err)
 		}
-
-		// Execute it
-		data, err = exec_request(*req)
-		if err != nil {
-			return err
-		}
-		// Save the results
-		filename = fmt.Sprintf("%s.json", next)
-		err = save_data(data, filename, path)
-		if err != nil {
-			return err
-		}
-		next = data["paging"].(map[string]interface{})["next"]
 	}
 	fmt.Println("Pagination ended")
-	
 	return nil
 }
 
@@ -143,14 +128,80 @@ func main() {
 	// Load environment
 	fmt.Println("Loading environment")
 	godotenv.Load("../.env")
-
-	// Extract campaigns
+	
+	// CAMPAIGNS
+	params := url.Values {
+		"date_preset": { "maximum" },
+		"limit": { "500" },
+	}
 	campaign_fields := []string{"id", "account_id", "name"}
+	req, err := build_request("/campaigns", params, campaign_fields)
+	if err != nil {
+		fmt.Println("Error building request")
+	}
 	fmt.Println("Extracting campaigns...")
-	err := extract("campaigns", campaign_fields)
+	err = extract(req, "campaigns/")
 	if err != nil {
 		//TODO: Handle
 		fmt.Println(err)
 	}
 
+	// AD SETS
+	params = url.Values {
+		"date_preset": { "maximum" },
+		"limit": { "500" },
+	}
+	ad_sets_fields := []string{
+		"id",
+		"account_id",
+		"adlabels",
+	}
+	req, err = build_request("/ad_sets", params, ad_sets_fields)
+	if err != nil {
+		fmt.Println("Error building request: ", err)
+	}
+	fmt.Println("Extracting Ad Sets")
+	err = extract(req, "ad_sets/")
+	if err != nil {
+		fmt.Println("Error extraction ad sets: ", err)
+	}
+
+	// ADS
+	params = url.Values {
+		"date_preset": { "maximum" },
+		"limit": { "500" },
+	}
+	ads_fields := []string{
+		"id",
+		"account_id",
+		"ad_active_time",
+	}
+	req, err = build_request("/ads", params, ads_fields)
+	if err != nil {
+		fmt.Println("Error building request: ", err)
+	}
+	fmt.Println("Extracting Ads")
+	// Params are the same for campaigns
+	err = extract(req, "ads/")
+	if err != nil {
+		fmt.Println("Error extracting ads: ", err)
+	}
+
+	// Extract ads insights
+	params = url.Values {
+		"date_preset": { "maximum" },
+		"level": { "ad" },
+		"limit": { "500" },
+	}
+	ads_insights_fields := []string {
+		"id",
+		"account_currency",
+		"account_name",
+	}
+	req, err = build_request("/insights", params, ads_insights_fields)
+	fmt.Println("Extracting ads insights")
+	err = extract(req, "insights/")
+	if err != nil {
+		fmt.Println("Error extracting insights: ", err)
+	}
 }

@@ -56,7 +56,25 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 	return data, fmt.Errorf("HTTP Error - Retry limit exceeded")
 }
 
-func save_data(data []interface{}, name string, prefix string) error {
+func make_jsonl(json_data []interface{}) ([]byte, error){
+	var jsonl_data []byte
+	var buf []byte
+	var err error
+	for i := range(json_data){
+		// Encode object into json
+		buf, err = json.Marshal(json_data[i])
+		if err != nil {
+			return jsonl_data, err
+		}
+		// Append the new json_data
+		jsonl_data = append(jsonl_data, buf...)
+		// Append a newline
+		jsonl_data = append(jsonl_data, byte('\n'))
+	}
+	return jsonl_data, nil
+}
+
+func save_data(data []byte, name string, prefix string) error {
 
 	// Create directories if then don't exist
 	dirPath := filepath.Dir(prefix + name)
@@ -65,13 +83,8 @@ func save_data(data []interface{}, name string, prefix string) error {
 		fmt.Println("Error creating directories: ", err)
 	}
 
-	// Encode object into json
-	json_data, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
 	// Write it file
-	err = os.WriteFile(prefix + name, json_data, 0666)
+	err = os.WriteFile(prefix + name, data, 0666)
 	if err != nil {
 		return err
 	}
@@ -122,10 +135,16 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 			ids = append(ids, data[i].(map[string]interface{})["id"])
 		}
 
+		// Convert the data to jsonl
+		jsonl_data, err := make_jsonl(data)
+		if err != nil {
+			return ids, err
+		}
+
 		// Save the results
 		io.WriteString(h, req.URL.String())
 		filename = fmt.Sprintf("%x.json", h.Sum(nil))
-		err = save_data(data, filename, "data/" + prefix)
+		err = save_data(jsonl_data, filename, "data/" + prefix)
 		if err != nil {
 			return ids, err
 		}

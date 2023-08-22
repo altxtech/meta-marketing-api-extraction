@@ -17,26 +17,34 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 	// Create objet to write results into
 	var data map[string]interface{}
 
-	resp, err := http.DefaultClient.Do(&req)
-	if err != nil {
-		return data, err
-	}
-	defer resp.Body.Close()
+	for attempt := 1; attempt <= 9; attempt++ {
 
-	// Parse the json data and return
-	content, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return data, err
+		// Trye to execute the request
+		resp, err := http.DefaultClient.Do(&req)
+		if err != nil {
+			return data, err
+		}
+		defer resp.Body.Close()
+
+		// Parse the json data and return
+		content, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return data, err
+		}
+		json.Unmarshal(content, &data)
+		
+		// Evaluate status code
+		if resp.StatusCode != 200 {
+			// If it was a rate limiting error...
+			if data["error"].(map[string]interface{})["code"] == "17" {
+				// Print the X-App-Usage Header
+				fmt.Println(resp.Header.Get("X-App-Usage"))
+			}
+			return data, fmt.Errorf("HTTP Error - Status code %d", resp.StatusCode)
+		}
+		return data, nil
 	}
-	
-	// Evaluate status code
-	if resp.StatusCode != 200 {
-		fmt.Println(string(content))
-		return data, fmt.Errorf("Status code %d", resp.StatusCode)
-	}
-	
-	json.Unmarshal(content, &data)
-	return data, nil
+	return data, fmt.Errorf("HTTP Error - Retry limit exceeded")
 }
 
 func save_data(data []interface{}, name string, prefix string) error {
@@ -101,7 +109,7 @@ func extract(req *http.Request, prefix string) error {
 		// Save the results
 		io.WriteString(h, req.URL.String())
 		filename = fmt.Sprintf("%x.json", h.Sum(nil))
-		err = save_data(data["data"].([]interface{}), filename, prefix)
+		err = save_data(data["data"].([]interface{}), filename, "data/" + prefix)
 		if err != nil {
 			return err
 		}
@@ -151,17 +159,17 @@ func main() {
 		"date_preset": { "maximum" },
 		"limit": { "500" },
 	}
-	ad_sets_fields := []string{
+	adsets_fields := []string{
 		"id",
 		"account_id",
 		"adlabels",
 	}
-	req, err = build_request("/ad_sets", params, ad_sets_fields)
+	req, err = build_request("/adsets", params, adsets_fields)
 	if err != nil {
 		fmt.Println("Error building request: ", err)
 	}
 	fmt.Println("Extracting Ad Sets")
-	err = extract(req, "ad_sets/")
+	err = extract(req, "adsets/")
 	if err != nil {
 		fmt.Println("Error extraction ad sets: ", err)
 	}

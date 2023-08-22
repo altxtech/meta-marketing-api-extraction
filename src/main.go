@@ -8,6 +8,8 @@ import (
 	"os"
 	"io"
 	"github.com/Valgard/godotenv"
+	"path/filepath"
+	"crypto/md5"
 )
 
 func exec_request(req http.Request) (map[string]interface{}, error) {
@@ -37,7 +39,14 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 	return data, nil
 }
 
-func save_data(data map[string]interface{}, name string) error {
+func save_data(data map[string]interface{}, name string, prefix string) error {
+
+	// Create directories if then don't exist
+	dirPath := filepath.Dir(prefix + name)
+	err := os.MkdirAll(dirPath, os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating directories: ", err)
+	}
 
 	// Encode object into json
 	json_data, err := json.Marshal(data)
@@ -45,7 +54,7 @@ func save_data(data map[string]interface{}, name string) error {
 		return err
 	}
 	// Write it file
-	err = os.WriteFile(name, json_data, 0666)
+	err = os.WriteFile(prefix + name, json_data, 0666)
 	if err != nil {
 		return err
 	}
@@ -54,11 +63,13 @@ func save_data(data map[string]interface{}, name string) error {
 
 // Global variables
 func extract(edge string, fields []string) error {
-
+	
 	account_id := os.Getenv("ACCOUNT_ID")
 	access_token := os.Getenv("ACCESS_TOKEN")
 
 	// Build the requests
+	fmt.Println("Building request")
+	
 	req_url := "https://graph.facebook.com/v17.0/" + account_id + "/campaigns"
 
 	req, err := http.NewRequest("GET", req_url, nil)
@@ -67,6 +78,8 @@ func extract(edge string, fields []string) error {
 	}
 	
 	// Prepare query params
+	fmt.Println("Preparing query params")
+	
 	params := url.Values{}
 	params.Add("access_token", access_token)
 	params.Add("limit", "100")
@@ -78,25 +91,34 @@ func extract(edge string, fields []string) error {
 
 	// Execute it
 	page_counter := 1
+	fmt.Printf("Extractint page %d\n", page_counter)
+	
 	data, err := exec_request(*req)
 	if err != nil {
 		return err
 	}
 
 	// Save the results
-	filename := fmt.Sprintf("page_%d.json", page_counter)
-	err = save_data(data, filename)
+	h := md5.New()
+	io.WriteString(h, req.URL.String())
+	filename := fmt.Sprintf("%x.json", h.Sum(nil))
+	prefix := fmt.Sprintf("data/%s/", edge)
+	err = save_data(data, filename, prefix)
 	if err != nil {
 		return err
 	}
-	after_cursor := data["paging"].(map[string]interface{})["cursors"].(map[string]interface{})["after"]
+	next := data["paging"].(map[string]interface{})["next"]
 
 	// Now paginate :D
-	for after_cursor != nil {
+	for next != nil {
 		page_counter += 1
 		// Update the query paramenters
-		params.Set("after", string(after_cursor.(string)))
-		req.URL.RawQuery = params.Encode()
+		fmt.Printf("Extracting page %d - %s\n", page_counter, next)
+		
+		req, err = http.NewRequest("GET", next.(string), nil)
+		if err != nil {
+			fmt.Println("Error preparing request: ", err)
+		}
 
 		// Execute it
 		data, err = exec_request(*req)
@@ -104,27 +126,31 @@ func extract(edge string, fields []string) error {
 			return err
 		}
 		// Save the results
-		filename = fmt.Sprintf("page_%d.json", page_counter)
-		err = save_data(data, filename)
+		filename = fmt.Sprintf("%s.json", next)
+		err = save_data(data, filename, path)
 		if err != nil {
 			return err
 		}
-		after_cursor = data["paging"].(map[string]interface{})["cursors"].(map[string]interface{})["after"]
+		next = data["paging"].(map[string]interface{})["next"]
 	}
+	fmt.Println("Pagination ended")
+	
 	return nil
 }
 
 func main() {
 
 	// Load environment
+	fmt.Println("Loading environment")
 	godotenv.Load("../.env")
 
 	// Extract campaigns
-	fmt.Println("Extracting campaigns...")
 	campaign_fields := []string{"id", "account_id", "name"}
+	fmt.Println("Extracting campaigns...")
 	err := extract("campaigns", campaign_fields)
 	if err != nil {
 		//TODO: Handle
 		fmt.Println(err)
 	}
+
 }

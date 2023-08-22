@@ -97,9 +97,11 @@ func build_request(edge string, params url.Values, fields []string) (*http.Reque
 	// Add access Token to params
 	params.Set("access_token", os.Getenv("ACCESS_TOKEN"))
 	// Add fields to params
-	for i := range(fields) {
-		params.Add("fields", fields[i])
+	field_str := fields[0]
+	for i := range(fields[1:]) {
+		field_str += "," + fields[i + 1]
 	}
+	params.Set("fields", field_str)
 	// Build the request
 	var req *http.Request
 	var err error
@@ -218,6 +220,7 @@ func main() {
 		"updated_time",
 	}
 	req, err := build_request("/campaigns", params, campaign_fields)
+	fmt.Println(req.URL.RawQuery)
 	if err != nil {
 		fmt.Println("Error building request")
 	}

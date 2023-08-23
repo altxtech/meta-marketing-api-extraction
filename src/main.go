@@ -93,7 +93,7 @@ func save_data(data []byte, name string, prefix string) error {
 
 func build_request(edge string, params url.Values, fields []string) (*http.Request, error) {
 	
-	baseUrl := "https://graph.facebook.com/v17.0/" + os.Getenv("ACCOUNT_ID") + edge
+	baseUrl := "https://graph.facebook.com/v17.0/" + edge
 	// Add access Token to params
 	params.Set("access_token", os.Getenv("ACCESS_TOKEN"))
 	// Add fields to params, if necessar
@@ -223,7 +223,8 @@ func main() {
 		"topline_id",
 		"updated_time",
 	}
-	req, err := build_request("/campaigns", params, campaign_fields)
+	edge := fmt.Sprintf("/%s/campaigns", os.Getenv("ACCOUNT_ID"))
+	req, err := build_request(edge, params, campaign_fields)
 	if err != nil {
 		fmt.Println("Error building request")
 	}
@@ -273,7 +274,8 @@ func main() {
 		"updated_time",
 		"use_new_app_click",
 	}
-	req, err = build_request("/adsets", params, adsets_fields)
+	edge = fmt.Sprintf("/%s/adsets", os.Getenv("ACCOUNT_ID"))
+	req, err = build_request(edge, params, adsets_fields)
 	if err != nil {
 		fmt.Println("Error building request: ", err)
 	}
@@ -316,13 +318,14 @@ func main() {
 		"tracking_specs",
 		"updated_time",
 	}
-	req, err = build_request("/ads", params, ads_fields)
+	edge = fmt.Sprintf("/%s/ads", os.Getenv("ACCOUNT_ID"))
+	req, err = build_request(edge, params, ads_fields)
 	if err != nil {
 		fmt.Println("Error building request: ", err)
 	}
 	fmt.Println("Extracting Ads")
 	// Params are the same for campaigns
-	_, err = extract(req, "ads/")
+	ads_ids, err := extract(req, "ads/")
 	if err != nil {
 		fmt.Println("Error extracting ads: ", err)
 	}
@@ -360,7 +363,8 @@ func main() {
         "spend",
         "updated_time",
 	}
-	req, err = build_request("/insights", params, ads_insights_fields)
+	edge = fmt.Sprintf("/%s/insights", os.Getenv("ACCOUNT_ID"))
+	req, err = build_request(edge, params, ads_insights_fields)
 	fmt.Println("Extracting ads insights")
 	_, err = extract(req, "insights/")
 	if err != nil { 
@@ -368,24 +372,24 @@ func main() {
 	}
 
 	// AD LEADS
-	// We won't use the standard functions, because it is a little different
-	// Build request
-	req, err = http.NewRequest("GET", "https://graph.facebook.com/v17.0/23858196216780714/leads", nil)
-	if err != nil {
-		fmt.Println("Error building request: ", err)
+	// For each ad
+	for i := range(ads_ids){
+
+		fmt.Println("Extracting leads for ad ", ads_ids[i])
+		// This edge takes no query parameters and no fields
+		params = url.Values{}
+		leads_fields := []string{}
+		edge := fmt.Sprintf("%s/leads", ads_ids[i])
+		req, err = build_request(edge, params, leads_fields)
+		if err != nil {
+			fmt.Println("Error building request: ", err)
+		}
+		// Execute the request
+		// Lead files are going to be small enough that
+		// I won't worry about partitioning by ad_id
+		_, err := extract(req, "leads/")
+		if err != nil {
+			fmt.Println("Error extracting data: ", err)
+		}
 	}
-	// Add access Token
-	params = url.Values{"access_token": { os.Getenv("ACCESS_TOKEN")}}
-	req.URL.RawQuery = params.Encode()
-	// Execute the request
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println("Error executing request: ", err)
-	}
-	// Load content
-	content, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error loading response content")
-	}
-	fmt.Println(string(content))
 }

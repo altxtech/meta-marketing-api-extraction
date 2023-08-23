@@ -96,12 +96,16 @@ func build_request(edge string, params url.Values, fields []string) (*http.Reque
 	baseUrl := "https://graph.facebook.com/v17.0/" + os.Getenv("ACCOUNT_ID") + edge
 	// Add access Token to params
 	params.Set("access_token", os.Getenv("ACCESS_TOKEN"))
-	// Add fields to params
-	field_str := fields[0]
-	for i := range(fields[1:]) {
-		field_str += "," + fields[i + 1]
+	// Add fields to params, if necessar
+	if len(fields) > 0 {
+		field_str := ""
+		for i := range(fields) {
+			field_str += fields[i] + ","
+		}
+		// Remove trailing comma
+		field_str = field_str[:len(field_str)-1]
+		params.Set("fields", field_str)
 	}
-	params.Set("fields", field_str)
 	// Build the request
 	var req *http.Request
 	var err error
@@ -365,5 +369,23 @@ func main() {
 
 	// AD LEADS
 	// We won't use the standard functions, because it is a little different
-	// TODO: Implement
+	// Build request
+	req, err = http.NewRequest("GET", "https://graph.facebook.com/v17.0/23858196216780714/leads", nil)
+	if err != nil {
+		fmt.Println("Error building request: ", err)
+	}
+	// Add access Token
+	params = url.Values{"access_token": { os.Getenv("ACCESS_TOKEN")}}
+	req.URL.RawQuery = params.Encode()
+	// Execute the request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println("Error executing request: ", err)
+	}
+	// Load content
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error loading response content")
+	}
+	fmt.Println(string(content))
 }

@@ -41,7 +41,7 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 			// Rate Limiting error -> Backoff
 			if data["error"].(map[string]interface{})["code"].(float64) == 17 {
 				// backoff
-				fmt.Printf("Rate limit exceeded. Backing off by %dms", backoff_time)
+				fmt.Printf("Rate limit exceeded. Backing off by %dms\n", backoff_time)
 				time.Sleep(time.Duration(backoff_time) * time.Millisecond)
 				backoff_time *= 2
 				continue
@@ -125,7 +125,7 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 	for page := 1; true; page++{
 
 		// Execute the request
-		fmt.Printf("Extractint page %d\n", page)
+		fmt.Printf("Extracting page %d\n", page)
 		response, err := exec_request(*req)
 		if err != nil {
 			return ids, err
@@ -177,7 +177,7 @@ func main() {
 	// CAMPAIGNS
 	params := url.Values {
 		"date_preset": { "maximum" },
-		"limit": { "500" },
+		"limit": { "200" },
 	}
 	campaign_fields := []string{
 		"id",
@@ -220,7 +220,6 @@ func main() {
 		"updated_time",
 	}
 	req, err := build_request("/campaigns", params, campaign_fields)
-	fmt.Println(req.URL.RawQuery)
 	if err != nil {
 		fmt.Println("Error building request")
 	}
@@ -235,38 +234,10 @@ func main() {
 	// AD SETS
 	params = url.Values {
 		"date_preset": { "maximum" },
-		"limit": { "500" },
+		"limit": { "200" },
 	}
 	adsets_fields := []string{
 		"id",
-		"account_id",
-		"adlabelds",
-		"adset_schedule",
-		"asset_feed_id",
-		"attribution_spec",
-		"bid_adjustments",
-		"bid_amount",
-		"bid_constraints",
-		"bid_info",
-		"bid_strategy",
-		"billing_event",
-		"budget_remaining",
-		"campaign",
-		"campaign_active_time",
-		"campaign_attribution",
-		"campaign_id",
-		"configured_status",
-		"contextual_bundling_spec",
-		"created_time",
-		"creative_sequence",
-		"daily_budget",
-		"daily_min_spend_target",
-		"daily_spend_cap",
-		"destination_type",
-		"dsa_beneficiary",
-		"dsa_payor",
-		"effective_status",
-		"end_time",
 		"frequency_control_specs",
 		"instagram_actor_id",
 		"is_budget_schedule_enabled",
@@ -311,7 +282,7 @@ func main() {
 	// ADS
 	params = url.Values {
 		"date_preset": { "maximum" },
-		"limit": { "500" },
+		"limit": { "200" },
 	}
 	ads_fields := []string{
 		"id",
@@ -355,7 +326,7 @@ func main() {
 	// ADS INSIGHTS
 	params = url.Values { 
 		"date_preset": { "maximum" },
-		"level": { "ad" }, "limit": { "500" }, 
+		"level": { "ad" }, "limit": { "200" }, 
 	} 
 	ads_insights_fields := []string {
         "account_id",

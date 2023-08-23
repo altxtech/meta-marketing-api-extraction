@@ -155,8 +155,12 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 			return ids, err
 		}
 
-		// Check if there is a nex page
-		next := response["paging"].(map[string]interface{})["next"]
+		// Check if there is a next page
+		paging := response["paging"]
+		if paging == nil {
+			break
+		}
+		next := paging.(map[string]interface{})["next"]
 		if next == nil {
 			// End extraction if not
 			break

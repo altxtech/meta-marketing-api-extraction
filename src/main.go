@@ -121,7 +121,6 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer gcs.Close()
 	bucket := gcs.Bucket(os.Getenv("BUCKET_NAME"))
 	
 	// Variables
@@ -153,12 +152,16 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 		// Save the results
 		io.WriteString(h, req.URL.String())
 		key = fmt.Sprintf("%x.json", h.Sum(nil))
+		ctx := context.Background()
 		w := bucket.Object(prefix + key).NewWriter(ctx)
 		_, err = w.Write(jsonl_data)
 		if err != nil {
 			return ids, err
 		}
-		w.Close()
+		err = w.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// Check if there is a next page
 		paging := response["paging"]

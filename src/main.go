@@ -1,16 +1,18 @@
 package main
 
 import (
+	"context"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"io"
-	"github.com/Valgard/godotenv"
-	"path/filepath"
-	"crypto/md5"
 	"time"
+	"cloud.google.com/go/storage"
+	"github.com/Valgard/godotenv"
 )
 
 func exec_request(req http.Request) (map[string]interface{}, error) {
@@ -74,23 +76,6 @@ func make_jsonl(json_data []interface{}) ([]byte, error){
 	return jsonl_data, nil
 }
 
-func save_data(data []byte, name string, prefix string) error {
-
-	// Create directories if then don't exist
-	dirPath := filepath.Dir(prefix + name)
-	err := os.MkdirAll(dirPath, os.ModePerm)
-	if err != nil {
-		fmt.Println("Error creating directories: ", err)
-	}
-
-	// Write it file
-	err = os.WriteFile(prefix + name, data, 0666)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func build_request(edge string, params url.Values, fields []string) (*http.Request, error) {
 	
 	baseUrl := "https://graph.facebook.com/v17.0/" + edge
@@ -120,10 +105,19 @@ func build_request(edge string, params url.Values, fields []string) (*http.Reque
 }
 
 func extract(req *http.Request, prefix string) ([]interface{}, error) {
+
+	// Initialize Google Cloud storage client
+	ctx := context.Background()
+	gcs, err := storage.NewClient(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer gcs.Close()
+	bucket := gcs.Bucket(os.Getenv("BUCKET_NAME"))
 	
 	// Variables
 	h := md5.New()
-	var filename string
+	var key string
 	var ids []interface{}
 
 	for page := 1; true; page++{
@@ -149,11 +143,13 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 
 		// Save the results
 		io.WriteString(h, req.URL.String())
-		filename = fmt.Sprintf("%x.json", h.Sum(nil))
-		err = save_data(jsonl_data, filename, "data/" + prefix)
+		key = fmt.Sprintf("%x.json", h.Sum(nil))
+		w := bucket.Object(prefix + key).NewWriter(ctx)
+		_, err = w.Write(jsonl_data)
 		if err != nil {
 			return ids, err
 		}
+		w.Close()
 
 		// Check if there is a next page
 		paging := response["paging"]

@@ -20,8 +20,9 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 	// Create objet to write results into
 	var data map[string]interface{}
 	
-	backoff_time := 200
-	for attempt := 1; attempt <= 9; attempt++ {
+	backoff_time := 100
+	// The Meta API is really strict when it comes to Rate-Limiting, so yeah... 20 attempts
+	for attempt := 1; attempt <= 20; attempt++ {
 
 		// Trye to execute the request
 		resp, err := http.DefaultClient.Do(&req)
@@ -395,7 +396,7 @@ func main() {
 		// Execute the request
 		// Lead files are going to be small enough that
 		// I won't worry about partitioning by ad_id
-		_, err := extract(req, "leads/")
+		_, err := extract(req, fmt.Sprintf("leads/%d/", ads_ids[i]))
 		if err != nil {
 			fmt.Println("Error extracting data: ", err)
 		}

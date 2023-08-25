@@ -20,7 +20,7 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 	// Create objet to write results into
 	var data map[string]interface{}
 	
-	backoff_time := 100
+	backoff_time := 200
 	for attempt := 1; attempt <= 9; attempt++ {
 
 		// Trye to execute the request
@@ -36,25 +36,35 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 			return data, err
 		}
 		json.Unmarshal(content, &data)
-		
-		// Evaluate status code
-		if resp.StatusCode != 200 {
 
-			// Rate Limiting error -> Backoff
-			if data["error"].(map[string]interface{})["code"].(float64) == 17 {
+		if resp.StatusCode == 200 {
+			return data, nil
+		}
+		
+		// Rate Limiting error -> Backoff 80004
+		switch data["error"].(map[string]interface{})["code"].(float64) {
+
+			case 17: 
 				// backoff
 				fmt.Printf("Rate limit exceeded. Backing off by %dms\n", backoff_time)
 				time.Sleep(time.Duration(backoff_time) * time.Millisecond)
 				backoff_time *= 2
 				continue
-			}
+			
+			case 80004:
+				// backoff
+				fmt.Printf("Rate limit exceeded. Backing off by %dms\n", backoff_time)
+				time.Sleep(time.Duration(backoff_time) * time.Millisecond)
+				backoff_time *= 2
+				continue
 
-			// Other errors
-			fmt.Printf(string(content))
-			return data, fmt.Errorf("HTTP Error - Status code %d", resp.StatusCode)
+			default:
+				fmt.Printf(string(content))
+				return data, fmt.Errorf("HTTP Error - Status code %d", resp.StatusCode)
 		}
-		return data, nil
 	}
+
+	// Retry limit exceede
 	return data, fmt.Errorf("HTTP Error - Retry limit exceeded")
 }
 

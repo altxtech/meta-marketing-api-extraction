@@ -49,14 +49,12 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 				fmt.Printf("Rate limit exceeded. Backing off by %dms\n", backoff_time)
 				time.Sleep(time.Duration(backoff_time) * time.Millisecond)
 				backoff_time *= 2
-				continue
 			
 			case 80004:
 				// backoff
 				fmt.Printf("Rate limit exceeded. Backing off by %dms\n", backoff_time)
 				time.Sleep(time.Duration(backoff_time) * time.Millisecond)
 				backoff_time *= 2
-				continue
 
 			default:
 				fmt.Printf(string(content))

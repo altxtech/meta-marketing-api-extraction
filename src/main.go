@@ -13,6 +13,7 @@ import (
 	"time"
 	"cloud.google.com/go/storage"
 	"github.com/Valgard/godotenv"
+	"flag"
 )
 
 func exec_request(req http.Request) (map[string]interface{}, error) {
@@ -186,14 +187,31 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 
 func main() {
 
-	// Load environment
-	fmt.Println("Loading environment")
-	godotenv.Load("../.env")
+	// Define a command-line flag for specifying the environment
+	environmentPtr := flag.String("environment", "", "Specify the environment (e.g., dev or prod)")
+	flag.Parse()
+
+	// Load base environment variables from the .env file
+	fmt.Println("Loading base environment")
+	if err := godotenv.Load(".env"); err != nil {
+		fmt.Println("Error loading base environment:", err)
+		os.Exit(1)
+	}
+
+	// Load specific environment variables if an environment is specified
+	if *environmentPtr != "" {
+		envFileName := fmt.Sprintf("%s.env", *environmentPtr)
+		fmt.Printf("Loading %s environment\n", *environmentPtr)
+		if err := godotenv.Load(envFileName); err != nil {
+			fmt.Printf("Error loading %s environment: %v\n", *environmentPtr, err)
+			os.Exit(1)
+		}
+	}
 	
 	// CAMPAIGNS
 	params := url.Values {
 		"date_preset": { "maximum" },
-		"limit": { "200" },
+		"limit": { "100" },
 	}
 	campaign_fields := []string{
 		"id",
@@ -251,7 +269,7 @@ func main() {
 	// AD SETS
 	params = url.Values {
 		"date_preset": { "maximum" },
-		"limit": { "200" },
+		"limit": { "100" },
 	}
 	adsets_fields := []string{
 		"id",
@@ -300,7 +318,7 @@ func main() {
 	// ADS
 	params = url.Values {
 		"date_preset": { "maximum" },
-		"limit": { "200" },
+		"limit": { "100" },
 	}
 	ads_fields := []string{
 		"id",
@@ -345,7 +363,7 @@ func main() {
 	// ADS INSIGHTS
 	params = url.Values { 
 		"date_preset": { "maximum" },
-		"level": { "ad" }, "limit": { "200" }, 
+		"level": { "ad" }, "limit": { "100" }, 
 	} 
 	ads_insights_fields := []string {
         "account_id",

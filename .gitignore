@@ -163,5 +163,6 @@ cython_debug/
 *.env
 !example.env
 
-# Terraform variables
+# Terraform garbage
+*.terraform
 *.tfvars

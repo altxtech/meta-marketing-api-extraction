@@ -32,7 +32,7 @@ provider "google" {
 
 terraform {
   backend "gcs" {
-    bucket = var.state_bucket
+    bucket = "terraform-states-01432"
   }
 }
 

@@ -45,9 +45,4 @@ resource "google_bigquery_dataset" "dataset" {
   labels = {
     env = "default"
   }
-
-  access {
-    role          = "OWNER"
-    user_by_email = google_service_account.bqowner.email
-  }
 }

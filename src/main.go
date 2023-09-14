@@ -16,10 +16,62 @@ import (
 	"flag"
 )
 
-func exec_request(req http.Request) (map[string]interface{}, error) {
+// Types
+// Nodes
+type Node interface{}
+
+type AdAccount struct {
+	ID string `json:"id"`
+	AccountID string `json:"account_id"`
+	Name string `json:"name"`
+}
+
+type AdCampaign struct {
+	ID string `json:"id"`
+	AccountID string `json:"account_id"`
+	Name string `json:"name"`
+}
+
+type AdSet struct {
+	ID string `json:"id"`
+	AccountID string `json:"account_id"`
+	Name string `json:"name"`
+}
+
+type Ad struct {
+	ID string `json:"id"`
+	AccountID string `json:"account_id"`
+	Name string `json:"name"`
+}
+
+// Paging
+type Paging struct {
+	Cursors struct {
+		After string `json:"after"`
+		Before string `json:"before"`
+	}
+	Previous string `json:"previous"`
+	Next string `json:"next"`
+}
+
+// Error
+type MetaGraphAPIError struct {
+	Type string `json:"type"`
+	Message string `json:"message"`
+	Code int `json:"code"`
+}
+
+// Response object
+type MetaGraphAPIResponse struct {
+	Data []Node
+	Paging Paging
+	Error MetaGraphAPIError
+}
+
+func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 
 	// Create objet to write results into
-	var data map[string]interface{}
+	var data MetaGraphAPIResponse
 	
 	backoff_time := 100
 	// The Meta API is really strict when it comes to Rate-Limiting, so yeah... 20 attempts
@@ -44,7 +96,7 @@ func exec_request(req http.Request) (map[string]interface{}, error) {
 		}
 		
 		// Rate Limiting error -> Backoff 80004
-		switch data["error"].(map[string]interface{})["code"].(float64) {
+		switch data.Error.Code {
 
 			case 17: 
 				// backoff
@@ -86,6 +138,7 @@ func make_jsonl(json_data []interface{}) ([]byte, error){
 	return jsonl_data, nil
 }
 
+// This is the thing that is wrong
 func build_request(edge string, params url.Values, fields []string) (*http.Request, error) {
 	
 	baseUrl := "https://graph.facebook.com/v17.0/" + edge
@@ -245,7 +298,6 @@ func main() {
 		"source_campaign_id",
 		"special_ad_categories",
 		"special_ad_category",
-		"special_ad_category_country",
 		"spend_cap",
 		"start_time",
 		"status",
@@ -345,7 +397,6 @@ func main() {
 		"source_ad",
 		"source_ad_id",
 		"status",
-		"tracking_specs",
 		"updated_time",
 	}
 	edge = fmt.Sprintf("/%s/ads", os.Getenv("ACCOUNT_ID"))

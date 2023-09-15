@@ -1,0 +1,278 @@
+[
+  {
+    "name": "id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Unique identifier for the ad creative"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Reference to the account identifier from ad_accounts"
+  },
+  {
+    "name": "actor_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Actor identifier"
+  },
+  {
+    "name": "applink_treatment",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Applink treatment"
+  },
+  {
+    "name": "authorization_category",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Authorization category"
+  },
+  {
+    "name": "body",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Body of the ad creative"
+  },
+  {
+    "name": "bundle_folder_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Bundle folder identifier"
+  },
+  {
+    "name": "call_to_action_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Call to action type"
+  },
+  {
+    "name": "categorization_criteria",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Categorization criteria"
+  },
+  {
+    "name": "category_media_source",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Category media source"
+  },
+  {
+    "name": "collaborative_ads_lsb_image_bank_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Collaborative ads LSB image bank identifier"
+  },
+  {
+    "name": "destination_set_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Destination set identifier"
+  },
+  {
+    "name": "dynamic_ad_voice",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Dynamic ad voice"
+  },
+  {
+    "name": "effective_authorization_category",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective authorization category"
+  },
+  {
+    "name": "effective_instagram_media_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective Instagram media identifier"
+  },
+  {
+    "name": "effective_instagram_story_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective Instagram story identifier"
+  },
+  {
+    "name": "effective_object_story_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective object story identifier"
+  },
+  {
+    "name": "enable_direct_install",
+    "type": "BOOL",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if direct install is enabled"
+  },
+  {
+    "name": "enable_launch_instant_app",
+    "type": "BOOL",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if launching instant app is enabled"
+  },
+  {
+    "name": "image_hash",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Image hash"
+  },
+  {
+    "name": "image_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Image URL"
+  },
+  {
+    "name": "instagram_actor_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Instagram actor identifier"
+  },
+  {
+    "name": "instagram_premalink_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Instagram permalink URL"
+  },
+  {
+    "name": "instagram_story_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Instagram story identifier"
+  },
+  {
+    "name": "instagram_user_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Instagram user identifier"
+  },
+  {
+    "name": "link_destination_display_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Link destination display URL"
+  },
+  {
+    "name": "link_og_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Link OG ID"
+  },
+  {
+    "name": "link_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Link URL"
+  },
+  {
+    "name": "messenger_sponsored_message",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Messenger sponsored message"
+  },
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Name of the ad creative"
+  },
+  {
+    "name": "object_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Object identifier"
+  },
+  {
+    "name": "object_store_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Object store URL"
+  },
+  {
+    "name": "object_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Object type"
+  },
+  {
+    "name": "object_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Object URL"
+  },
+  {
+    "name": "place_page_set_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Place page set identifier"
+  },
+  {
+    "name": "playable_asset_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Playable asset identifier"
+  },
+  {
+    "name": "product_set_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Product set identifier"
+  },
+  {
+    "name": "referral_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Referral identifier"
+  },
+  {
+    "name": "source_instagram_media_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Source Instagram media identifier"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Status"
+  },
+  {
+    "name": "template_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Template URL"
+  },
+  {
+    "name": "thumbnail_url",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Thumbnail URL"
+  },
+  {
+    "name": "title",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Title"
+  },
+  {
+    "name": "url_tags",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "URL tags"
+  },
+  {
+    "name": "use_page_actor_override",
+    "type": "BOOL",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if page actor override is enabled"
+  },
+  {
+    "name": "video_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Video identifier"
+  }
+]

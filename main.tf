@@ -106,3 +106,19 @@ resource "google_bigquery_table" "ads_table" {
 
   schema = file("${path.module}/schemas/ads.json")
 }
+
+resource "google_bigquery_table" "adcreatives_table" {
+  dataset_id = google_bigquery_dataset.facebook_ads_dataset.dataset_id
+  table_id   = "adcreatives"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("${path.module}/schemas/adcreatives.json")
+}
+

@@ -1,0 +1,183 @@
+[
+  {
+    "name": "id",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "Unique identifier for the ad campaign"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Reference to the account identifier from ad_accounts"
+  },
+  {
+    "name": "bid_strategy",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Bid strategy for the ad campaign"
+  },
+  {
+    "name": "boosted_object_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Boosted object identifier"
+  },
+  {
+    "name": "budget_rebalance_flag",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Flag indicating budget rebalancing"
+  },
+  {
+    "name": "budget_remaining",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Remaining budget for the ad campaign"
+  },
+  {
+    "name": "buying_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Buying type for the ad campaign"
+  },
+  {
+    "name": "can_create_brand_lift_study",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if brand lift study can be created"
+  },
+  {
+    "name": "can_use_spend_cap",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if spend cap can be used"
+  },
+  {
+    "name": "configured_status",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Configured status of the ad campaign"
+  },
+  {
+    "name": "created_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "Time when the ad campaign was created"
+  },
+  {
+    "name": "daily_budget",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Daily budget for the ad campaign"
+  },
+  {
+    "name": "effective_status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective status of the ad campaign"
+  },
+  {
+    "name": "has_secondary_skadnetwork_reporting",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Flag indicating secondary SKAdNetwork reporting"
+  },
+  {
+    "name": "is_budget_schedule_enabled",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if budget scheduling is enabled"
+  },
+  {
+    "name": "is_skadnetwork_attribution",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Flag indicating SKAdNetwork attribution"
+  },
+  {
+    "name": "last_budget_toggling_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "Time of the last budget toggling"
+  },
+  {
+    "name": "lifetime_budget",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Lifetime budget for the ad campaign"
+  },
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Name of the ad campaign"
+  },
+  {
+    "name": "objective",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Objective of the ad campaign"
+  },
+  {
+    "name": "primary_attribution",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Primary attribution for the ad campaign"
+  },
+  {
+    "name": "smart_promotion_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Smart promotion type for the ad campaign"
+  },
+  {
+    "name": "source_campaign_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Source campaign identifier"
+  },
+  {
+    "name": "special_ad_category",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Special ad category for the ad campaign"
+  },
+  {
+    "name": "spend_cap",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Spend cap for the ad campaign"
+  },
+  {
+    "name": "start_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "Start time of the ad campaign"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Status of the ad campaign"
+  },
+  {
+    "name": "stop_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "Stop time of the ad campaign"
+  },
+  {
+    "name": "topline_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Topline identifier"
+  },
+  {
+    "name": "updated_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "Time when the ad campaign was last updated"
+  }
+]
+

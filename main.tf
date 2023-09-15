@@ -36,7 +36,7 @@ terraform {
   }
 }
 
-resource "google_bigquery_dataset" "dataset" {
+resource "google_bigquery_dataset" "facebook_ads_dataset" {
   dataset_id                  = "facebook_ads_test"
   description                 = "This is a test description"
   location                    = var.gcp_region
@@ -45,4 +45,34 @@ resource "google_bigquery_dataset" "dataset" {
   labels = {
     env = "default"
   }
+}
+
+resource "google_bigquery_table" "ad_accounts_table" {
+  dataset_id = google_bigquery_dataset.facebook_ads_dataset.dataset_id
+  table_id   = "ad_accounts"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("${path.module}/schemas/ad_accounts.json")
+}
+
+resource "google_bigquery_table" "ad_sets_table" {
+  dataset_id = google_bigquery_dataset.facebook_ads_dataset.dataset_id
+  table_id   = "adsets"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("${path.module}/schemas/adsets.json")
 }

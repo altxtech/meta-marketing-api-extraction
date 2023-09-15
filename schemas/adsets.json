@@ -1,0 +1,229 @@
+[
+  {
+    "name": "id",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "Unique identifier for the ad set"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "Reference to the account identifier from ad_accounts"
+  },
+  {
+    "name": "asset_feed_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Asset feed identifier"
+  },
+  {
+    "name": "bid_amount",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "Bid amount"
+  },
+  {
+    "name": "bid_strategy",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Bid strategy"
+  },
+  {
+    "name": "billing_event",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Billing event"
+  },
+  {
+    "name": "budget_remaining",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Remaining budget for the ad set"
+  },
+  {
+    "name": "campaign_active_time",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Campaign active time"
+  },
+  {
+    "name": "campaign_attribution",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Campaign attribution"
+  },
+  {
+    "name": "campaign_id",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Campaign identifier"
+  },
+  {
+    "name": "configured_status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Configured status of the ad set"
+  },
+  {
+    "name": "created_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "Time when the ad set was created"
+  },
+  {
+    "name": "daily_budget",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Daily budget for the ad set"
+  },
+  {
+    "name": "daily_min_spend_target",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Daily minimum spend target"
+  },
+  {
+    "name": "daily_spend_cap",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Daily spend cap for the ad set"
+  },
+  {
+    "name": "destination_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Destination type"
+  },
+  {
+    "name": "dsa_beneficiary",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "DSA beneficiary"
+  },
+  {
+    "name": "dsa_payor",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "DSA payor"
+  },
+  {
+    "name": "effective_status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective status of the ad set"
+  },
+  {
+    "name": "end_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "End time of the ad set"
+  },
+  {
+    "name": "instagram_actor_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Instagram actor identifier"
+  },
+  {
+    "name": "is_budget_schedule_enabled",
+    "type": "BOOL",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if budget scheduling is enabled"
+  },
+  {
+    "name": "is_dynamic_creative",
+    "type": "BOOL",
+    "mode": "NULLABLE",
+    "description": "Flag indicating if dynamic creative is enabled"
+  },
+  {
+    "name": "lifetime_budget",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Lifetime budget for the ad set"
+  },
+  {
+    "name": "lifetime_imps",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "Lifetime impressions for the ad set"
+  },
+  {
+    "name": "lifetime_min_spend_target",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Lifetime minimum spend target"
+  },
+  {
+    "name": "lifetime_spend_cap",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Lifetime spend cap for the ad set"
+  },
+  {
+    "name": "multi_optimization_goal_weight",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Multi optimization goal weight"
+  },
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Name of the ad set"
+  },
+  {
+    "name": "optimization_goal",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Optimization goal for the ad set"
+  },
+  {
+    "name": "optimization_sub_event",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Optimization sub-event for the ad set"
+  },
+  {
+    "name": "recurring_budget_semantics",
+    "type": "BOOL",
+    "mode": "NULLABLE",
+    "description": "Recurring budget semantics"
+  },
+  {
+    "name": "review_feedback",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Review feedback"
+  },
+  {
+    "name": "rf_prediction_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "RF prediction identifier"
+  },
+  {
+    "name": "source_adset_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Source ad set identifier"
+  },
+  {
+    "name": "start_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "Start time of the ad set"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Status of the ad set"
+  },
+  {
+    "name": "updated_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

@@ -1,0 +1,14 @@
+[
+	{
+		"name": "id",
+		"type": "STRING",
+		"mode": "NULLABLE",
+		"description": "account_id"
+	},
+	{
+		"name": "name",
+		"type": "STRING",
+		"mode": "NULLABLE",
+		"description": "account name"
+	}
+]

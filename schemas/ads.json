@@ -1,0 +1,111 @@
+[
+  {
+    "name": "id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Unique identifier for the ad"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Reference to the account identifier from ad_account_id"
+  },
+  {
+    "name": "ad_active_time",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "Ad active time"
+  },
+  {
+    "name": "ad_schedule_end_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "End time of the ad schedule"
+  },
+  {
+    "name": "ad_schedule_start_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "Start time of the ad schedule"
+  },
+  {
+    "name": "adset_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Reference to the adset identifier from adset.id"
+  },
+  {
+    "name": "bid_amount",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "Bid amount for the ad"
+  },
+  {
+    "name": "campaign_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Reference to the campaign identifier from campaign.id"
+  },
+  {
+    "name": "configured_status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Configured status of the ad"
+  },
+  {
+    "name": "conversion_domain",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Conversion domain for the ad"
+  },
+  {
+    "name": "created_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "Time when the ad was created"
+  },
+  {
+    "name": "effective_status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Effective status of the ad"
+  },
+  {
+    "name": "meta_reward_adgroup_status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Meta reward adgroup status"
+  },
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Name of the ad"
+  },
+  {
+    "name": "preview_shareable_link",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Preview shareable link for the ad"
+  },
+  {
+    "name": "source_ad_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Source ad identifier"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Status of the ad"
+  },
+  {
+    "name": "updated_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "Time when the ad was last updated"
+  }
+]
+

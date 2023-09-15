@@ -91,3 +91,18 @@ resource "google_bigquery_table" "campaigns_table" {
 
   schema = file("${path.module}/schemas/campaigns.json")
 }
+
+resource "google_bigquery_table" "ads_table" {
+  dataset_id = google_bigquery_dataset.facebook_ads_dataset.dataset_id
+  table_id   = "ads"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("${path.module}/schemas/ads.json")
+}

@@ -547,7 +547,6 @@ func main() {
 		"level": { "ad" }, "limit": { "100" }, 
 	} 
 	ads_insights_fields := []string {
-		"id",
 		"account_id",
 		"account_name",
 		"ad_id",

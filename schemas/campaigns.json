@@ -1,13 +1,13 @@
 [
   {
     "name": "id",
-    "type": "STRING",
-    "mode": "REQUIRED",
+    "type": "INTEGER",
+    "mode": "NULLABLE",
     "description": "Unique identifier for the ad campaign"
   },
   {
     "name": "account_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Reference to the account identifier from ad_accounts"
   },
@@ -19,7 +19,7 @@
   },
   {
     "name": "boosted_object_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Boosted object identifier"
   },
@@ -31,7 +31,7 @@
   },
   {
     "name": "budget_remaining",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Remaining budget for the ad campaign"
   },
@@ -55,19 +55,19 @@
   },
   {
     "name": "configured_status",
-    "type": "BOOLEAN",
+    "type": "STRING",
     "mode": "NULLABLE",
     "description": "Configured status of the ad campaign"
   },
   {
     "name": "created_time",
-    "type": "DATETIME",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
     "description": "Time when the ad campaign was created"
   },
   {
     "name": "daily_budget",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Daily budget for the ad campaign"
   },
@@ -103,8 +103,7 @@
   },
   {
     "name": "lifetime_budget",
-    "type": "NUMERIC",
-    "mode": "NULLABLE",
+    "type": "INTEGER",
     "description": "Lifetime budget for the ad campaign"
   },
   {
@@ -133,7 +132,7 @@
   },
   {
     "name": "source_campaign_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Source campaign identifier"
   },
@@ -151,7 +150,7 @@
   },
   {
     "name": "start_time",
-    "type": "DATETIME",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
     "description": "Start time of the ad campaign"
   },
@@ -163,19 +162,19 @@
   },
   {
     "name": "stop_time",
-    "type": "DATETIME",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
     "description": "Stop time of the ad campaign"
   },
   {
     "name": "topline_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Topline identifier"
   },
   {
     "name": "updated_time",
-    "type": "DATETIME",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
     "description": "Time when the ad campaign was last updated"
   }

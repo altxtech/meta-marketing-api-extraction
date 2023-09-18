@@ -13,7 +13,7 @@
   },
   {
     "name": "asset_feed_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Asset feed identifier"
   },
@@ -225,5 +225,10 @@
     "name": "updated_time",
     "type": "TIMESTAMP",
     "mode": "NULLABLE"
+  },
+  {
+	  "name": "use_new_app_click",
+	  "type": "BOOL",
+	  "mode": "NULLABLE"
   }
 ]

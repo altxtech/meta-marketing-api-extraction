@@ -37,7 +37,7 @@ terraform {
 }
 
 resource "google_bigquery_dataset" "facebook_ads_dataset" {
-  dataset_id                  = "facebook_ads_test"
+  dataset_id                  = "dw_dev_staging_facebook_ads_historical"
   description                 = "This is a test description"
   location                    = var.gcp_region
   default_table_expiration_ms = 3600000
@@ -122,3 +122,32 @@ resource "google_bigquery_table" "adcreatives_table" {
   schema = file("${path.module}/schemas/adcreatives.json")
 }
 
+resource "google_bigquery_table" "ad_insights_table" {
+  dataset_id = google_bigquery_dataset.facebook_ads_dataset.dataset_id
+  table_id   = "ad_insights"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("${path.module}/schemas/ad_insights.json")
+}
+
+resource "google_bigquery_table" "user_lead_gen_info_table" {
+  dataset_id = google_bigquery_dataset.facebook_ads_dataset.dataset_id
+  table_id   = "user_lead_gen_info"
+
+  time_partitioning {
+    type = "DAY"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("${path.module}/schemas/user_lead_gen_info.json")
+}

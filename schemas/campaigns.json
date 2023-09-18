@@ -97,7 +97,7 @@
   },
   {
     "name": "last_budget_toggling_time",
-    "type": "DATETIME",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
     "description": "Time of the last budget toggling"
   },

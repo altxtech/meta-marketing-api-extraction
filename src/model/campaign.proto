@@ -1,0 +1,98 @@
+syntax = "proto3";
+package meta_marketing_extract;
+
+option go_package = "meta_marketing_extract/model";
+import "google/protobuf/timestamp.proto";
+
+message Campaign {
+    // Unique identifier for the ad campaign
+    int32 id = 1;
+    
+    // Reference to the account identifier from ad_accounts
+    int32 account_id = 2;
+    
+    // Bid strategy for the ad campaign
+    string bid_strategy = 3;
+    
+    // Boosted object identifier
+    int32 boosted_object_id = 4;
+    
+    // Flag indicating budget rebalancing
+    bool budget_rebalance_flag = 5;
+    
+    // Remaining budget for the ad campaign
+    int32 budget_remaining = 6;
+    
+    // Buying type for the ad campaign
+    string buying_type = 7;
+    
+    // Flag indicating if brand lift study can be created
+    bool can_create_brand_lift_study = 8;
+    
+    // Flag indicating if spend cap can be used
+    bool can_use_spend_cap = 9;
+    
+    // Configured status of the ad campaign
+    string configured_status = 10;
+    
+    // Time when the ad campaign was created
+    google.protobuf.Timestamp created_time = 11;
+    
+    // Daily budget for the ad campaign
+    int32 daily_budget = 12;
+    
+    // Effective status of the ad campaign
+    string effective_status = 13;
+    
+    // Flag indicating secondary SKAdNetwork reporting
+    bool has_secondary_skadnetwork_reporting = 14;
+    
+    // Flag indicating if budget scheduling is enabled
+    bool is_budget_schedule_enabled = 15;
+    
+    // Flag indicating SKAdNetwork attribution
+    bool is_skadnetwork_attribution = 16;
+    
+    // Time of the last budget toggling
+    google.protobuf.Timestamp last_budget_toggling_time = 17;
+    
+    // Lifetime budget for the ad campaign
+    int32 lifetime_budget = 18;
+    
+    // Name of the ad campaign
+    string name = 19;
+    
+    // Objective of the ad campaign
+    string objective = 20;
+    
+    // Primary attribution for the ad campaign
+    string primary_attribution = 21;
+    
+    // Smart promotion type for the ad campaign
+    string smart_promotion_type = 22;
+    
+    // Source campaign identifier
+    int32 source_campaign_id = 23;
+    
+    // Special ad category for the ad campaign
+    string special_ad_category = 24;
+    
+    // Spend cap for the ad campaign
+    string spend_cap = 25;
+    
+    // Start time of the ad campaign
+    google.protobuf.Timestamp start_time = 26;
+    
+    // Status of the ad campaign
+    string status = 27;
+    
+    // Stop time of the ad campaign
+    google.protobuf.Timestamp stop_time = 28;
+    
+    // Topline identifier
+    int32 topline_id = 29;
+    
+    // Time when the ad campaign was last updated
+    google.protobuf.Timestamp updated_time = 30;
+}
+

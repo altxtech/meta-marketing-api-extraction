@@ -37,11 +37,9 @@ terraform {
 }
 
 resource "google_bigquery_dataset" "facebook_ads_dataset" {
-  dataset_id                  = "dw_dev_staging_facebook_ads_historical"
-  description                 = "This is a test description"
-  location                    = var.gcp_region
-  default_table_expiration_ms = 3600000
-
+  dataset_id  = "dw_dev_staging_facebook_ads_historical"
+  description = "This is a test description"
+  location    = var.gcp_region
   labels = {
     env = "default"
   }
@@ -59,7 +57,8 @@ resource "google_bigquery_table" "ad_accounts_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/ad_accounts.json")
+  schema              = file("${path.module}/schemas/ad_accounts.json")
+  deletion_protection = false
 }
 
 resource "google_bigquery_table" "ad_sets_table" {
@@ -74,7 +73,8 @@ resource "google_bigquery_table" "ad_sets_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/adsets.json")
+  schema              = file("${path.module}/schemas/adsets.json")
+  deletion_protection = false
 }
 
 resource "google_bigquery_table" "campaigns_table" {
@@ -89,7 +89,8 @@ resource "google_bigquery_table" "campaigns_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/campaigns.json")
+  schema              = file("${path.module}/schemas/campaigns.json")
+  deletion_protection = false
 }
 
 resource "google_bigquery_table" "ads_table" {
@@ -104,7 +105,8 @@ resource "google_bigquery_table" "ads_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/ads.json")
+  schema              = file("${path.module}/schemas/ads.json")
+  deletion_protection = false
 }
 
 resource "google_bigquery_table" "adcreatives_table" {
@@ -119,7 +121,8 @@ resource "google_bigquery_table" "adcreatives_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/adcreatives.json")
+  schema              = file("${path.module}/schemas/adcreatives.json")
+  deletion_protection = false
 }
 
 resource "google_bigquery_table" "ad_insights_table" {
@@ -134,7 +137,8 @@ resource "google_bigquery_table" "ad_insights_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/ad_insights.json")
+  schema              = file("${path.module}/schemas/ad_insights.json")
+  deletion_protection = false
 }
 
 resource "google_bigquery_table" "user_lead_gen_info_table" {
@@ -149,5 +153,6 @@ resource "google_bigquery_table" "user_lead_gen_info_table" {
     env = "default"
   }
 
-  schema = file("${path.module}/schemas/user_lead_gen_info.json")
+  schema              = file("${path.module}/schemas/user_lead_gen_info.json")
+  deletion_protection = false
 }

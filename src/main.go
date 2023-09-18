@@ -2,187 +2,34 @@ package main
 
 import (
 	"context"
-	"crypto/md5"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
+	"meta_marketing_extract/model"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
-	"cloud.google.com/go/storage"
+
 	"github.com/Valgard/godotenv"
-	"flag"
+
+	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
+	"cloud.google.com/go/bigquery/storage/managedwriter/adapt"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 // Types
-// Nodes
-type Node interface{}
-
-type AdAccount struct {
-	ID        string `json:"id"`
-	AccountID string `json:"account_id"`
-	Name      string `json:"name"`
+type Node []byte
+func (n Node) toProto(message interface{}) error {
+	err := json.Unmarshal(n, message)
+	return err
 }
 
-type AdSet struct {
-	ID                          string    `json:"id"`
-	AccountID                   string    `json:"account_id"`
-	AdCampaignID                string    `json:"ad_campaign_id"`
-	AssetFeedID                 string    `json:"asset_feed_id"`
-	BidAmount                   int       `json:"bid_amount"`
-	BidStrategy                 string    `json:"bid_strategy"`
-	BillingEvent                string    `json:"billing_event"`
-	BudgetRemaining             float64   `json:"budget_remaining"`
-	CampaignActiveTime          float64   `json:"campaign_active_time"`
-	CampaignAttribution         string    `json:"campaign_attribution"`
-	CampaignID                  float64   `json:"campaign_id"`
-	ConfiguredStatus            string    `json:"configured_status"`
-	CreatedTime                 time.Time `json:"created_time"`
-	DailyBudget                 float64   `json:"daily_budget"`
-	DailyMinSpendTarget         float64   `json:"daily_min_spend_target"`
-	DailySpendCap               float64   `json:"daily_spend_cap"`
-	DestinationType             string    `json:"destination_type"`
-	DSABeneficiary              string    `json:"dsa_beneficiary"`
-	DSAPayor                    string    `json:"dsa_payor"`
-	EffectiveStatus             string    `json:"effective_status"`
-	EndTime                     time.Time `json:"end_time"`
-	InstagramActorID            string    `json:"instagram_actor_id"`
-	IsBudgetScheduleEnabled     bool      `json:"is_budget_schedule_enabled"`
-	IsDynamicCreative           bool      `json:"is_dynamic_creative"`
-	LifetimeBudget              string    `json:"lifetime_budget"`
-	LifetimeImpressions         int       `json:"lifetime_imps"`
-	LifetimeMinSpendTarget      float64   `json:"lifetime_min_spend_target"`
-	LifetimeSpendCap            string    `json:"lifetime_spend_cap"`
-	MultiOptimizationGoalWeight string    `json:"multi_optimization_goal_weight"`
-	Name                        string    `json:"name"`
-	OptimizationGoal            string    `json:"optimization_goal"`
-	OptimizationSubEvent        string    `json:"optimization_sub_event"`
-	RecurringBudgetSemantics    bool      `json:"recurring_budget_semantics"`
-	ReviewFeedback              string    `json:"review_feedback"`
-	RFPredictionID              string    `json:"rf_prediction_id"`
-	SourceAdSetID               string    `json:"source_adset_id"`
-	StartTime                   time.Time `json:"start_time"`
-	Status                      string    `json:"status"`
-	UpdatedTime                 time.Time `json:"updated_time"`
-	UseNewAppClick              bool      `json:"use_new_app_click"`
-}
-
-type Ad struct {
-	ID                   string    `json:"id"`
-	AccountID            string    `json:"account_id"`
-	AdActiveTime         float64   `json:"ad_active_time"`
-	AdScheduleEndTime    time.Time `json:"ad_schedule_end_time"`
-	AdScheduleStartTime  time.Time `json:"ad_schedule_start_time"`
-	AdSetID              string    `json:"adset_id"`
-	BidAmount            int       `json:"bid_amount"`
-	CampaignID           string    `json:"campaign_id"`
-	ConfiguredStatus     string    `json:"configured_status"`
-	ConversionDomain     string    `json:"conversion_domain"`
-	CreatedTime          time.Time `json:"created_time"`
-	EffectiveStatus      string    `json:"effective_status"`
-	MetaRewardAdgroupStatus string `json:"meta_reward_adgroup_status"`
-	Name                 string    `json:"name"`
-	PreviewShareableLink string    `json:"preview_shareable_link"`
-	SourceAdID           string    `json:"source_ad_id"`
-	Status               string    `json:"status"`
-	UpdatedTime          time.Time `json:"updated_time"`
-}
-
-type AdCreative struct {
-	ID                           string `json:"id"`
-	AccountID                    string `json:"account_id"`
-	ActorID                      string `json:"actor_id"`
-	ApplinkTreatment             string `json:"applink_treatment"`
-	AuthorizationCategory        string `json:"authorization_category"`
-	Body                         string `json:"body"`
-	BundleFolderID               string `json:"bundle_folder_id"`
-	CallToActionType             string `json:"call_to_action_type"`
-	CategorizationCriteria       string `json:"categorization_criteria"`
-	CategoryMediaSource          string `json:"category_media_source"`
-	CollaborativeAdsLSBImageBankID string `json:"collaborative_ads_lsb_image_bank_id"`
-	DestinationSetID             string `json:"destination_set_id"`
-	DynamicAdVoice               string `json:"dynamic_ad_voice"`
-	EffectiveAuthorizationCategory string `json:"effective_authorization_category"`
-	EffectiveInstagramMediaID    string `json:"effective_instagram_media_id"`
-	EffectiveInstagramStoryID    string `json:"effective_instagram_story_id"`
-	EffectiveObjectStoryID       string `json:"effective_object_story_id"`
-	EnableDirectInstall          bool   `json:"enable_direct_install"`
-	EnableLaunchInstantApp       bool   `json:"enable_launch_instant_app"`
-	ImageHash                    string `json:"image_hash"`
-	ImageURL                     string `json:"image_url"`
-	InstagramActorID             string `json:"instagram_actor_id"`
-	InstagramPermalinkURL        string `json:"instagram_permalink_url"`
-	InstagramStoryID             string `json:"instagram_story_id"`
-	InstagramUserID              string `json:"instagram_user_id"`
-	LinkDestinationDisplayURL    string `json:"link_destination_display_url"`
-	LinkOGID                     string `json:"link_og_id"`
-	LinkURL                      string `json:"link_url"`
-	MessengerSponsoredMessage    string `json:"messenger_sponsored_message"`
-	Name                         string `json:"name"`
-	ObjectID                     string `json:"object_id"`
-	ObjectStoreURL               string `json:"object_store_url"`
-	ObjectType                   string `json:"object_type"`
-	ObjectURL                    string `json:"object_url"`
-	PlacePageSetID               string `json:"place_page_set_id"`
-	PlayableAssetID              string `json:"playable_asset_id"`
-	ProductSetID                 string `json:"product_set_id"`
-	ReferralID                   string `json:"referral_id"`
-	SourceInstagramMediaID       string `json:"source_instagram_media_id"`
-	Status                       string `json:"status"`
-	TemplateURL                  string `json:"template_url"`
-	ThumbnailURL                 string `json:"thumbnail_url"`
-	Title                        string `json:"title"`
-	URLTags                       string `json:"url_tags"`
-	UsePageActorOverride         bool   `json:"use_page_actor_override"`
-	VideoID                      string `json:"video_id"`
-}
-
-type AdInsight struct {
-	ID              string    `json:"id"`
-	AccountID       string    `json:"account_id"`
-	AccountName     string    `json:"account_name"`
-	AdID            string    `json:"ad_id"`
-	AdName          string    `json:"ad_name"`
-	AdSetID         string    `json:"adset_id"`
-	AdSetName       string    `json:"adset_name"`
-	CampaignID      string    `json:"campaign_id"`
-	CampaignName    string    `json:"campaign_name"`
-	Clicks          int64     `json:"clicks"`
-	CPC             float64   `json:"cpc"`
-	CPM             float64   `json:"cpm"`
-	CPP             float64   `json:"cpp"`
-	CreatedTime     time.Time `json:"created_time"`
-	CTR             float64   `json:"ctr"`
-	DateStart       time.Time `json:"date_start"`
-	DateStop        time.Time `json:"date_stop"`
-	Frequency       float64   `json:"frequency"`
-	FullViewImpressions int64 `json:"full_view_impressions"`
-	FullViewReach   int64     `json:"full_view_reach"`
-	Impressions     int64     `json:"impressions"`
-	Reach           int64     `json:"reach"`
-	SocialSpend     float64   `json:"social_spend"`
-	Spend           float64   `json:"spend"`
-	UpdatedTime     time.Time `json:"updated_time"`
-}
-
-type UserLeadGenInfo struct {
-	ID          string          `json:"id"`
-	AdID        string          `json:"ad_id"`
-	AdName      string          `json:"ad_name"`
-	AdSetID     string          `json:"adset_id"`
-	AdSetName   string          `json:"adset_name"`
-	CampaignID  string          `json:"campaign_id"`
-	CampaignName string         `json:"campaign_name"`
-	CreatedTime time.Time       `json:"created_time"`
-	FieldData   json.RawMessage `json:"field_data"`
-	FormID      string          `json:"form_id"`
-	IsOrganic   bool            `json:"is_organic"`
-	PartnerName string          `json:"partner_name"`
-	Platform    string          `json:"platform"`
-	Post        string          `json:"post"`
-}
 // Paging
 type Paging struct {
 	Cursors struct {
@@ -259,23 +106,6 @@ func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 	return data, fmt.Errorf("HTTP Error - Retry limit exceeded")
 }
 
-func make_jsonl(json_data []Node) ([]byte, error){
-	var jsonl_data []byte
-	var buf []byte
-	var err error
-	for i := range(json_data){
-		// Encode object into json
-		buf, err = json.Marshal(json_data[i])
-		if err != nil {
-			return jsonl_data, err
-		}
-		// Append the new json_data
-		jsonl_data = append(jsonl_data, buf...)
-		// Append a newline
-		jsonl_data = append(jsonl_data, byte('\n'))
-	}
-	return jsonl_data, nil
-}
 
 // This is the thing that is wrong
 func build_request(edge string, params url.Values, fields []string) (*http.Request, error) {
@@ -306,52 +136,16 @@ func build_request(edge string, params url.Values, fields []string) (*http.Reque
 	return req, nil
 }
 
-func extract(req *http.Request, prefix string) ([]interface{}, error) {
+func extract(req *http.Request, prefix string) ([]Node, error) {
 
-	// Initialize Google Cloud storage client
-	ctx := context.Background()
-	gcs, err := storage.NewClient(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	bucket := gcs.Bucket(os.Getenv("BUCKET_NAME"))
-	
-	// Variables
-	h := md5.New()
-	var key string
-	var ids []interface{}
+	// Data
+	var data []Node
 
 	for page := 1; true; page++{
 
 		// Execute the request
 		fmt.Printf("Extracting page %d\n", page)
 		response, err := exec_request(*req)
-		if err != nil {
-			return ids, err
-		}
-
-		// Add the ids to the list of data to return
-		data := response.Data
-		for i := range(data){
-			ids = append(ids, data[i].(map[string]interface{})["id"])
-		}
-
-		// Convert the data to jsonl
-		jsonl_data, err := make_jsonl(data)
-		if err != nil {
-			return ids, err
-		}
-
-		// Save the results
-		io.WriteString(h, req.URL.String())
-		key = fmt.Sprintf("%x.json", h.Sum(nil))
-		ctx := context.Background()
-		w := bucket.Object(prefix + key).NewWriter(ctx)
-		_, err = w.Write(jsonl_data)
-		if err != nil {
-			return ids, err
-		}
-		err = w.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -370,8 +164,112 @@ func extract(req *http.Request, prefix string) ([]interface{}, error) {
 		}
 	}
 	fmt.Println("Pagination ended")
-	return ids, nil
+	return data, nil
 }
+
+// Create bigquery client
+func createBQClient() *storage.BigQueryWriteClient {
+
+	ctx := context.Background()
+
+	// create the bigquery client
+	log.Println("creating the bigquery client...")
+	client, err := storage.NewBigQueryWriteClient(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+// descriptor
+func getDescriptor(message protoreflect.ProtoMessage) *descriptorpb.DescriptorProto {
+	descriptor, err := adapt.NormalizeDescriptor(message.ProtoReflect().Descriptor())
+	if err != nil {
+		log.Fatal("NormalizeDescriptor: ", err)
+	}
+	return descriptor
+}
+// Write Data
+func writeRows(
+	client *storage.BigQueryWriteClient,
+	descriptor *descriptorpb.DescriptorProto,
+	rows []protoreflect.ProtoMessage,
+	project string, dataset string, table string,
+	trace string,
+) {
+
+	ctx := context.Background()
+
+	// create the write stream
+	// a COMMITTED write stream inserts data immediately into bigquery
+	log.Println("creating the write stream...")
+	resp, err := client.CreateWriteStream(ctx, &storagepb.CreateWriteStreamRequest{
+		Parent: fmt.Sprintf("projects/%s/datasets/%s/tables/%s", project, dataset, table),
+		WriteStream: &storagepb.WriteStream{
+			Type: storagepb.WriteStream_COMMITTED,
+		},
+	})
+	if err != nil {
+		log.Fatal("CreateWriteStream: ", err)
+	}
+
+	// get the stream by calling AppendRows
+	log.Println("calling AppendRows...")
+	stream, err := client.AppendRows(ctx)
+	if err != nil {
+		log.Fatal("AppendRows: ", err)
+	}
+
+	// serialize the rows
+	log.Println("marshalling the rows...")
+	var opts proto.MarshalOptions
+	var data [][]byte
+	for _, row := range rows {
+		buf, err := opts.Marshal(row)
+		if err != nil {
+			log.Fatal("protobuf.Marshal: ", err)
+		}
+		data = append(data, buf)
+	}
+
+	// send the rows to bigquery
+	log.Println("sending the data...")
+	err = stream.Send(&storagepb.AppendRowsRequest{
+		WriteStream: resp.Name,
+		TraceId:     trace, // identifies this client
+		Rows: &storagepb.AppendRowsRequest_ProtoRows{
+			ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+				// protocol buffer schema
+				WriterSchema: &storagepb.ProtoSchema{
+					ProtoDescriptor: descriptor,
+				},
+				// protocol buffer data
+				Rows: &storagepb.ProtoRows{
+					SerializedRows: data, // serialized protocol buffer data
+				},
+			},
+		},
+	})
+	if err != nil {
+		log.Fatal("AppendRows.Send: ", err)
+	}
+
+	// get the response, which will tell us whether it worked
+	log.Println("waiting for response...")
+	r, err := stream.Recv()
+	if err != nil {
+		log.Fatal("AppendRows.Recv: ", err)
+	}
+
+	if rErr := r.GetError(); rErr != nil {
+		log.Printf("result was error: %v", rErr)
+	} else if rResult := r.GetAppendResult(); rResult != nil {
+		log.Printf("now stream offset is %d", rResult.Offset.Value)
+	}
+
+	log.Println("done")
+}
+
 
 func main() {
 
@@ -395,6 +293,9 @@ func main() {
 			os.Exit(1)
 		}
 	}
+
+	// BQ client
+	bq := createBQClient()
 	
 	// CAMPAIGNS
 	params := url.Values {
@@ -438,14 +339,37 @@ func main() {
 	if err != nil {
 		fmt.Println("Error building request")
 	}
-	
 	fmt.Println("Extracting campaigns...")
-	_, err = extract(req, "campaigns/")
+	data, err := extract(req, "campaigns/")
 	if err != nil {
 		//TODO: Handle
 		fmt.Println(err)
 	}
+	fmt.Printf("Total rows extracted: %d\n", len(data))
+	fmt.Println(data)
 
+	// Serialize the Data
+	var campaingsData []protoreflect.ProtoMessage
+	for _, node := range(data){ 
+		var message model.Campaign
+		err := node.toProto(&message)
+		if err != nil {
+			log.Fatal(err)
+		}
+		messageProto := proto.Message(&message)
+		campaingsData = append(campaingsData, messageProto)
+	}
+
+	// Write data
+	var campaign model.Campaign
+	desc := getDescriptor(&campaign)
+	project := os.Getenv("PROJECT_ID")
+	dataset := os.Getenv("DATASET_ID")
+	table := "campaigns"
+	trace := "historical-extraction"
+	writeRows(bq, desc, campaingsData, project, dataset, table, trace)
+	
+	/*
 	// AD SETS
 	params = url.Values {
 		"date_preset": { "maximum" },
@@ -601,4 +525,5 @@ func main() {
 			fmt.Println("Error extracting data: ", err)
 		}
 	}
+	*/
 }

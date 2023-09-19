@@ -5,35 +5,35 @@ option go_package = "meta_marketing_extract/model";
 import "google/protobuf/timestamp.proto";
 
 message Campaign {
-	int32 id = 1;
-	int32 account_id = 2;
+	int64 id = 1;
+	int64 account_id = 2;
 	string bid_strategy = 3;
-	int32 boosted_object_id = 4;
+	int64 boosted_object_id = 4;
 	bool budget_rebalance_flag = 5;
-	int32 budget_remaining = 6;
+	int64 budget_remaining = 6;
 	string buying_type = 7;
 	bool can_create_brand_lift_study = 8;
 	bool can_use_spend_cap = 9;
 	string configured_status = 10;
 	google.protobuf.Timestamp created_time = 11;
-	int32 daily_budget = 12;
+	int64 daily_budget = 12;
 	string effective_status = 13;
 	bool has_secondary_skadnetwork_reporting = 14;
 	bool is_budget_schedule_enabled = 15;
 	bool is_skadnetwork_attribution = 16;
 	google.protobuf.Timestamp last_budget_toggling_time = 17;
-	int32 lifetime_budget = 18;
+	int64 lifetime_budget = 18;
 	string name = 19;
 	string objective = 20;
 	string primary_attribution = 21;
 	string smart_promotion_type = 22;
-	int32 source_campaign_id = 23;
+	int64 source_campaign_id = 23;
 	string special_ad_category = 24;
 	string spend_cap = 25;
 	google.protobuf.Timestamp start_time = 26;
 	string status = 27;
 	google.protobuf.Timestamp stop_time = 28;
-	int32 topline_id = 29;
+	int64 topline_id = 29;
 	google.protobuf.Timestamp updated_time = 30;
 }
 

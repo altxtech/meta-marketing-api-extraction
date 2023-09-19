@@ -1,7 +1,7 @@
 [
   {
     "name": "id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Unique identifier for the ad campaign"
   },

@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"time"
+	"strconv"
 
 	"github.com/Valgard/godotenv"
 
@@ -22,13 +23,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
-
-// Types
-type Node []byte
-func (n Node) toProto(message interface{}) error {
-	err := json.Unmarshal(n, message)
-	return err
-}
 
 // Paging
 type Paging struct {
@@ -47,12 +41,94 @@ type MetaGraphAPIError struct {
 	Code int `json:"code"`
 }
 
+// node
+type Node map[string]interface{}
+
 // Response object
 type MetaGraphAPIResponse struct {
 	Data []Node
 	Paging Paging
 	Error MetaGraphAPIError
 }
+
+
+// Conversions to proto
+// Conversions to proto
+
+func nodeToCampaign(node Node) (*model.Campaign, error) {
+	campaign := &model.Campaign{}
+
+	if val, ok := node["id"].(string); ok {
+		id, err := strconv.ParseInt(val, 10, 32)
+		if err != nil {
+			return nil, err
+		}
+		campaign.Id = int32(id)
+	}
+
+	if val, ok := node["account_id"].(string); ok {
+		// Convert to into
+		id, err := strconv.ParseInt(val, 10, 32)
+		if err != nil {
+			return nil, err
+		}
+		campaign.AccountId = int32(id)
+	}
+
+	if val, ok := node["bid_strategy"].(string); ok {
+		campaign.BidStrategy = val
+	}
+	
+	if val, ok := node["boosted_object_id"].(string); ok {
+		id, err := strconv.ParseInt(val, 10, 32)
+		if err != nil {
+			return nil, err
+		}
+		campaign.BoostedObjectId = int32(id)
+	}
+
+	if val, ok := node["budget_rebalance_flag"].(bool); ok {
+		campaign.BudgetRebalanceFlag = val
+	}
+
+	if val, ok := node["budget_remaining"].(string); ok {
+		intVal, err := strconv.Atoi(val)
+		if err != nil {
+			return nil, err
+		}
+		campaign.BudgetRemaining = int32(intVal) 
+	}
+	/*
+	int32 budget_remaining = 6;
+	string buying_type = 7;
+	bool can_create_brand_lift_study = 8;
+	bool can_use_spend_cap = 9;
+	string configured_status = 10;
+	google.protobuf.Timestamp created_time = 11;
+	int32 daily_budget = 12;
+	string effective_status = 13;
+	bool has_secondary_skadnetwork_reporting = 14;
+	bool is_budget_schedule_enabled = 15;
+	bool is_skadnetwork_attribution = 16;
+	google.protobuf.Timestamp last_budget_toggling_time = 17;
+	int32 lifetime_budget = 18;
+	string name = 19;
+	string objective = 20;
+	string primary_attribution = 21;
+	string smart_promotion_type = 22;
+	int32 source_campaign_id = 23;
+	string special_ad_category = 24;
+	string spend_cap = 25;
+	google.protobuf.Timestamp start_time = 26;
+	string status = 27;
+	google.protobuf.Timestamp stop_time = 28;
+	int32 topline_id = 29;
+	google.protobuf.Timestamp updated_time = 30;
+	*/
+
+	return campaign, nil
+}
+
 
 func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 
@@ -69,13 +145,13 @@ func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 			return data, err
 		}
 		defer resp.Body.Close()
-
 		// Parse the json data and return
 		content, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return data, err
 		}
 		json.Unmarshal(content, &data)
+		log.Println(data)
 
 		if resp.StatusCode == 200 {
 			return data, nil
@@ -105,6 +181,8 @@ func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 	// Retry limit exceede
 	return data, fmt.Errorf("HTTP Error - Retry limit exceeded")
 }
+
+// Convert 
 
 
 // This is the thing that is wrong
@@ -136,10 +214,10 @@ func build_request(edge string, params url.Values, fields []string) (*http.Reque
 	return req, nil
 }
 
-func extract(req *http.Request, prefix string) ([]Node, error) {
+func extract(req *http.Request, prefix string) ([]model.Campaign, error) {
 
 	// Data
-	var data []Node
+	var data []model.Campaign
 
 	for page := 1; true; page++{
 
@@ -149,6 +227,9 @@ func extract(req *http.Request, prefix string) ([]Node, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		// Append the data
+		data = append(data, response.Data...)
 
 		// Check if there is a next page
 		paging := response.Paging
@@ -189,6 +270,7 @@ func getDescriptor(message protoreflect.ProtoMessage) *descriptorpb.DescriptorPr
 	}
 	return descriptor
 }
+
 // Write Data
 func writeRows(
 	client *storage.BigQueryWriteClient,
@@ -346,21 +428,17 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Printf("Total rows extracted: %d\n", len(data))
-	fmt.Println(data)
 
 	// Serialize the Data
+	log.Println("Serializing json data into proto messages")
 	var campaingsData []protoreflect.ProtoMessage
 	for _, node := range(data){ 
-		var message model.Campaign
-		err := node.toProto(&message)
-		if err != nil {
-			log.Fatal(err)
-		}
-		messageProto := proto.Message(&message)
+		messageProto := proto.Message(&node)
 		campaingsData = append(campaingsData, messageProto)
 	}
 
 	// Write data
+	log.Println("Writing rows")
 	var campaign model.Campaign
 	desc := getDescriptor(&campaign)
 	project := os.Getenv("PROJECT_ID")

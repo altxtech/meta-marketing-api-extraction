@@ -26,66 +26,36 @@ type Campaign struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Unique identifier for the ad campaign
-	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Reference to the account identifier from ad_accounts
-	AccountId int32 `protobuf:"varint,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	// Bid strategy for the ad campaign
-	BidStrategy string `protobuf:"bytes,3,opt,name=bid_strategy,json=bidStrategy,proto3" json:"bid_strategy,omitempty"`
-	// Boosted object identifier
-	BoostedObjectId int32 `protobuf:"varint,4,opt,name=boosted_object_id,json=boostedObjectId,proto3" json:"boosted_object_id,omitempty"`
-	// Flag indicating budget rebalancing
-	BudgetRebalanceFlag bool `protobuf:"varint,5,opt,name=budget_rebalance_flag,json=budgetRebalanceFlag,proto3" json:"budget_rebalance_flag,omitempty"`
-	// Remaining budget for the ad campaign
-	BudgetRemaining int32 `protobuf:"varint,6,opt,name=budget_remaining,json=budgetRemaining,proto3" json:"budget_remaining,omitempty"`
-	// Buying type for the ad campaign
-	BuyingType string `protobuf:"bytes,7,opt,name=buying_type,json=buyingType,proto3" json:"buying_type,omitempty"`
-	// Flag indicating if brand lift study can be created
-	CanCreateBrandLiftStudy bool `protobuf:"varint,8,opt,name=can_create_brand_lift_study,json=canCreateBrandLiftStudy,proto3" json:"can_create_brand_lift_study,omitempty"`
-	// Flag indicating if spend cap can be used
-	CanUseSpendCap bool `protobuf:"varint,9,opt,name=can_use_spend_cap,json=canUseSpendCap,proto3" json:"can_use_spend_cap,omitempty"`
-	// Configured status of the ad campaign
-	ConfiguredStatus string `protobuf:"bytes,10,opt,name=configured_status,json=configuredStatus,proto3" json:"configured_status,omitempty"`
-	// Time when the ad campaign was created
-	CreatedTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_time,json=createdTime,proto3" json:"created_time,omitempty"`
-	// Daily budget for the ad campaign
-	DailyBudget int32 `protobuf:"varint,12,opt,name=daily_budget,json=dailyBudget,proto3" json:"daily_budget,omitempty"`
-	// Effective status of the ad campaign
-	EffectiveStatus string `protobuf:"bytes,13,opt,name=effective_status,json=effectiveStatus,proto3" json:"effective_status,omitempty"`
-	// Flag indicating secondary SKAdNetwork reporting
-	HasSecondarySkadnetworkReporting bool `protobuf:"varint,14,opt,name=has_secondary_skadnetwork_reporting,json=hasSecondarySkadnetworkReporting,proto3" json:"has_secondary_skadnetwork_reporting,omitempty"`
-	// Flag indicating if budget scheduling is enabled
-	IsBudgetScheduleEnabled bool `protobuf:"varint,15,opt,name=is_budget_schedule_enabled,json=isBudgetScheduleEnabled,proto3" json:"is_budget_schedule_enabled,omitempty"`
-	// Flag indicating SKAdNetwork attribution
-	IsSkadnetworkAttribution bool `protobuf:"varint,16,opt,name=is_skadnetwork_attribution,json=isSkadnetworkAttribution,proto3" json:"is_skadnetwork_attribution,omitempty"`
-	// Time of the last budget toggling
-	LastBudgetTogglingTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=last_budget_toggling_time,json=lastBudgetTogglingTime,proto3" json:"last_budget_toggling_time,omitempty"`
-	// Lifetime budget for the ad campaign
-	LifetimeBudget int32 `protobuf:"varint,18,opt,name=lifetime_budget,json=lifetimeBudget,proto3" json:"lifetime_budget,omitempty"`
-	// Name of the ad campaign
-	Name string `protobuf:"bytes,19,opt,name=name,proto3" json:"name,omitempty"`
-	// Objective of the ad campaign
-	Objective string `protobuf:"bytes,20,opt,name=objective,proto3" json:"objective,omitempty"`
-	// Primary attribution for the ad campaign
-	PrimaryAttribution string `protobuf:"bytes,21,opt,name=primary_attribution,json=primaryAttribution,proto3" json:"primary_attribution,omitempty"`
-	// Smart promotion type for the ad campaign
-	SmartPromotionType string `protobuf:"bytes,22,opt,name=smart_promotion_type,json=smartPromotionType,proto3" json:"smart_promotion_type,omitempty"`
-	// Source campaign identifier
-	SourceCampaignId int32 `protobuf:"varint,23,opt,name=source_campaign_id,json=sourceCampaignId,proto3" json:"source_campaign_id,omitempty"`
-	// Special ad category for the ad campaign
-	SpecialAdCategory string `protobuf:"bytes,24,opt,name=special_ad_category,json=specialAdCategory,proto3" json:"special_ad_category,omitempty"`
-	// Spend cap for the ad campaign
-	SpendCap string `protobuf:"bytes,25,opt,name=spend_cap,json=spendCap,proto3" json:"spend_cap,omitempty"`
-	// Start time of the ad campaign
-	StartTime *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	// Status of the ad campaign
-	Status string `protobuf:"bytes,27,opt,name=status,proto3" json:"status,omitempty"`
-	// Stop time of the ad campaign
-	StopTime *timestamppb.Timestamp `protobuf:"bytes,28,opt,name=stop_time,json=stopTime,proto3" json:"stop_time,omitempty"`
-	// Topline identifier
-	ToplineId int32 `protobuf:"varint,29,opt,name=topline_id,json=toplineId,proto3" json:"topline_id,omitempty"`
-	// Time when the ad campaign was last updated
-	UpdatedTime *timestamppb.Timestamp `protobuf:"bytes,30,opt,name=updated_time,json=updatedTime,proto3" json:"updated_time,omitempty"`
+	Id                               int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	AccountId                        int32                  `protobuf:"varint,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	BidStrategy                      string                 `protobuf:"bytes,3,opt,name=bid_strategy,json=bidStrategy,proto3" json:"bid_strategy,omitempty"`
+	BoostedObjectId                  int32                  `protobuf:"varint,4,opt,name=boosted_object_id,json=boostedObjectId,proto3" json:"boosted_object_id,omitempty"`
+	BudgetRebalanceFlag              bool                   `protobuf:"varint,5,opt,name=budget_rebalance_flag,json=budgetRebalanceFlag,proto3" json:"budget_rebalance_flag,omitempty"`
+	BudgetRemaining                  int32                  `protobuf:"varint,6,opt,name=budget_remaining,json=budgetRemaining,proto3" json:"budget_remaining,omitempty"`
+	BuyingType                       string                 `protobuf:"bytes,7,opt,name=buying_type,json=buyingType,proto3" json:"buying_type,omitempty"`
+	CanCreateBrandLiftStudy          bool                   `protobuf:"varint,8,opt,name=can_create_brand_lift_study,json=canCreateBrandLiftStudy,proto3" json:"can_create_brand_lift_study,omitempty"`
+	CanUseSpendCap                   bool                   `protobuf:"varint,9,opt,name=can_use_spend_cap,json=canUseSpendCap,proto3" json:"can_use_spend_cap,omitempty"`
+	ConfiguredStatus                 string                 `protobuf:"bytes,10,opt,name=configured_status,json=configuredStatus,proto3" json:"configured_status,omitempty"`
+	CreatedTime                      *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_time,json=createdTime,proto3" json:"created_time,omitempty"`
+	DailyBudget                      int32                  `protobuf:"varint,12,opt,name=daily_budget,json=dailyBudget,proto3" json:"daily_budget,omitempty"`
+	EffectiveStatus                  string                 `protobuf:"bytes,13,opt,name=effective_status,json=effectiveStatus,proto3" json:"effective_status,omitempty"`
+	HasSecondarySkadnetworkReporting bool                   `protobuf:"varint,14,opt,name=has_secondary_skadnetwork_reporting,json=hasSecondarySkadnetworkReporting,proto3" json:"has_secondary_skadnetwork_reporting,omitempty"`
+	IsBudgetScheduleEnabled          bool                   `protobuf:"varint,15,opt,name=is_budget_schedule_enabled,json=isBudgetScheduleEnabled,proto3" json:"is_budget_schedule_enabled,omitempty"`
+	IsSkadnetworkAttribution         bool                   `protobuf:"varint,16,opt,name=is_skadnetwork_attribution,json=isSkadnetworkAttribution,proto3" json:"is_skadnetwork_attribution,omitempty"`
+	LastBudgetTogglingTime           *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=last_budget_toggling_time,json=lastBudgetTogglingTime,proto3" json:"last_budget_toggling_time,omitempty"`
+	LifetimeBudget                   int32                  `protobuf:"varint,18,opt,name=lifetime_budget,json=lifetimeBudget,proto3" json:"lifetime_budget,omitempty"`
+	Name                             string                 `protobuf:"bytes,19,opt,name=name,proto3" json:"name,omitempty"`
+	Objective                        string                 `protobuf:"bytes,20,opt,name=objective,proto3" json:"objective,omitempty"`
+	PrimaryAttribution               string                 `protobuf:"bytes,21,opt,name=primary_attribution,json=primaryAttribution,proto3" json:"primary_attribution,omitempty"`
+	SmartPromotionType               string                 `protobuf:"bytes,22,opt,name=smart_promotion_type,json=smartPromotionType,proto3" json:"smart_promotion_type,omitempty"`
+	SourceCampaignId                 int32                  `protobuf:"varint,23,opt,name=source_campaign_id,json=sourceCampaignId,proto3" json:"source_campaign_id,omitempty"`
+	SpecialAdCategory                string                 `protobuf:"bytes,24,opt,name=special_ad_category,json=specialAdCategory,proto3" json:"special_ad_category,omitempty"`
+	SpendCap                         string                 `protobuf:"bytes,25,opt,name=spend_cap,json=spendCap,proto3" json:"spend_cap,omitempty"`
+	StartTime                        *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	Status                           string                 `protobuf:"bytes,27,opt,name=status,proto3" json:"status,omitempty"`
+	StopTime                         *timestamppb.Timestamp `protobuf:"bytes,28,opt,name=stop_time,json=stopTime,proto3" json:"stop_time,omitempty"`
+	ToplineId                        int32                  `protobuf:"varint,29,opt,name=topline_id,json=toplineId,proto3" json:"topline_id,omitempty"`
+	UpdatedTime                      *timestamppb.Timestamp `protobuf:"bytes,30,opt,name=updated_time,json=updatedTime,proto3" json:"updated_time,omitempty"`
 }
 
 func (x *Campaign) Reset() {

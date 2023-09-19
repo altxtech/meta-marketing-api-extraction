@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/Valgard/godotenv"
 
@@ -22,7 +22,18 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+// Program Arguments
+type stringSliceFlag []string
+func (f *stringSliceFlag) String() string {
+	return fmt.Sprintf("%v", *f)
+}
+func (f *stringSliceFlag) Set(value string) error {
+	*f = append(*f, value)
+	return nil
+}
 
 // Paging
 type Paging struct {
@@ -56,23 +67,24 @@ type MetaGraphAPIResponse struct {
 // Conversions to proto
 
 func nodeToCampaign(node Node) (*model.Campaign, error) {
+	const layout string = "2006-01-02T15:04:05-0700"
 	campaign := &model.Campaign{}
 
 	if val, ok := node["id"].(string); ok {
-		id, err := strconv.ParseInt(val, 10, 32)
+		id, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		campaign.Id = int32(id)
+		campaign.Id = int64(id)
 	}
 
 	if val, ok := node["account_id"].(string); ok {
 		// Convert to into
-		id, err := strconv.ParseInt(val, 10, 32)
+		id, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		campaign.AccountId = int32(id)
+		campaign.AccountId = int64(id)
 	}
 
 	if val, ok := node["bid_strategy"].(string); ok {
@@ -80,11 +92,11 @@ func nodeToCampaign(node Node) (*model.Campaign, error) {
 	}
 	
 	if val, ok := node["boosted_object_id"].(string); ok {
-		id, err := strconv.ParseInt(val, 10, 32)
+		id, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		campaign.BoostedObjectId = int32(id)
+		campaign.BoostedObjectId = int64(id)
 	}
 
 	if val, ok := node["budget_rebalance_flag"].(bool); ok {
@@ -96,35 +108,141 @@ func nodeToCampaign(node Node) (*model.Campaign, error) {
 		if err != nil {
 			return nil, err
 		}
-		campaign.BudgetRemaining = int32(intVal) 
+		campaign.BudgetRemaining = int64(intVal) 
 	}
-	/*
-	int32 budget_remaining = 6;
-	string buying_type = 7;
-	bool can_create_brand_lift_study = 8;
-	bool can_use_spend_cap = 9;
-	string configured_status = 10;
-	google.protobuf.Timestamp created_time = 11;
-	int32 daily_budget = 12;
-	string effective_status = 13;
-	bool has_secondary_skadnetwork_reporting = 14;
-	bool is_budget_schedule_enabled = 15;
-	bool is_skadnetwork_attribution = 16;
-	google.protobuf.Timestamp last_budget_toggling_time = 17;
-	int32 lifetime_budget = 18;
-	string name = 19;
-	string objective = 20;
-	string primary_attribution = 21;
-	string smart_promotion_type = 22;
-	int32 source_campaign_id = 23;
-	string special_ad_category = 24;
-	string spend_cap = 25;
-	google.protobuf.Timestamp start_time = 26;
-	string status = 27;
-	google.protobuf.Timestamp stop_time = 28;
-	int32 topline_id = 29;
-	google.protobuf.Timestamp updated_time = 30;
-	*/
+
+	if val, ok := node["buying_type"].(string); ok {
+		campaign.BuyingType = val
+	}
+
+	if val, ok := node["can_create_brand_lift_study"].(bool); ok {
+		campaign.CanCreateBrandLiftStudy = val
+	}
+
+	if val, ok := node["can_use_spend_cap"].(bool); ok {
+		campaign.CanUseSpendCap = val
+	}
+
+	if val, ok := node["configured_status"].(string); ok {
+		campaign.ConfiguredStatus = val
+	}
+
+	if val, ok := node["created_time"].(string); ok {
+		// Convert to Timestamp
+		time, err := time.Parse(layout, val)
+		if err != nil {
+			return nil, err
+		}
+		campaign.CreatedTime = timestamppb.New(time)
+	}
+
+	if val, ok := node["daily_budget"].(string); ok {
+		// Convert to int
+		intVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		campaign.DailyBudget = int64(intVal)
+	}
+
+	if val, ok := node["effective_status"].(string); ok {
+		campaign.EffectiveStatus = val
+	}
+
+	if val, ok := node["has_secondary_skadnetwork_reporting"].(bool); ok {
+		campaign.HasSecondarySkadnetworkReporting = val
+	}
+
+	if val, ok := node["is_budget_schedule_enabled"].(bool); ok {
+		campaign.IsBudgetScheduleEnabled = val
+	}
+
+	if val, ok := node["is_skadnetwork_attribution"].(bool); ok {
+		campaign.IsSkadnetworkAttribution = val
+	}
+
+	if val, ok := node["is_skadnetwork_attribution"].(bool); ok {
+		campaign.IsSkadnetworkAttribution = val
+	}
+
+	if val, ok := node["last_budget_toggling_time"].(string); ok {
+		// Convert to Timestamp
+		time, err := time.Parse(layout, val)
+		if err != nil { return nil, err
+		}
+		campaign.LastBudgetTogglingTime = timestamppb.New(time)
+	}
+
+	if val, ok := node["lifetime_budget"].(string); ok {
+		// Convert to int
+		intVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		campaign.LifetimeBudget = int64(intVal)
+	}
+
+	if val, ok := node["name"].(string); ok {
+		campaign.Name = val
+	}
+	if val, ok := node["objective"].(string); ok {
+		campaign.Objective = val
+	}
+	if val, ok := node["primary_attribution"].(string); ok {
+		campaign.PrimaryAttribution = val
+	}
+	if val, ok := node["smart_promotion_type"].(string); ok {
+		campaign.SmartPromotionType = val
+	}
+	if val, ok := node["source_campaign_id"].(string); ok {
+		// Convert to int
+		intVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		campaign.SourceCampaignId = int64(intVal)
+	}
+	if val, ok := node["special_ad_category"].(string); ok {
+		campaign.SpecialAdCategory = val
+	}
+	if val, ok := node["spend_cap"].(string); ok {
+		campaign.SpendCap = val
+	}
+	if val, ok := node["start_time"].(string); ok {
+		// Convert to Timestamp
+		time, err := time.Parse(layout, val)
+		if err != nil {
+			return nil, err
+		}
+		campaign.StartTime = timestamppb.New(time)
+	}
+	if val, ok := node["status"].(string); ok {
+		campaign.Status = val
+	}
+	if val, ok := node["stop_time"].(string); ok {
+		// Convert to Timestamp
+		time, err := time.Parse(layout, val)
+		if err != nil {
+			return nil, err
+		}
+		campaign.StopTime = timestamppb.New(time)
+	}
+	if val, ok := node["topline_id"].(string); ok {
+		// Convert to int
+		intVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		campaign.ToplineId = int64(intVal)
+	}
+	if val, ok := node["updated_time"].(string); ok {
+		// Convert to Timestamp
+		time, err := time.Parse(layout, val)
+		if err != nil {
+			return nil, err
+		}
+		campaign.UpdatedTime = timestamppb.New(time)
+	}
 
 	return campaign, nil
 }
@@ -151,7 +269,6 @@ func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 			return data, err
 		}
 		json.Unmarshal(content, &data)
-		log.Println(data)
 
 		if resp.StatusCode == 200 {
 			return data, nil
@@ -214,10 +331,10 @@ func build_request(edge string, params url.Values, fields []string) (*http.Reque
 	return req, nil
 }
 
-func extract(req *http.Request, prefix string) ([]model.Campaign, error) {
+func extract(req *http.Request) ([]Node, error) {
 
 	// Data
-	var data []model.Campaign
+	var data []Node
 
 	for page := 1; true; page++{
 
@@ -353,37 +470,14 @@ func writeRows(
 }
 
 
-func main() {
-
-	// Define a command-line flag for specifying the environment
-	environmentPtr := flag.String("environment", "", "Specify the environment (e.g., dev or prod)")
-	flag.Parse()
-
-	// Load base environment variables from the .env file
-	fmt.Println("Loading base environment")
-	if err := godotenv.Load(".env"); err != nil {
-		fmt.Println("Error loading base environment:", err)
-		os.Exit(1)
-	}
-
-	// Load specific environment variables if an environment is specified
-	if *environmentPtr != "" {
-		envFileName := fmt.Sprintf("%s.env", *environmentPtr)
-		fmt.Printf("Loading %s environment\n", *environmentPtr)
-		if err := godotenv.Load(envFileName); err != nil {
-			fmt.Printf("Error loading %s environment: %v\n", *environmentPtr, err)
-			os.Exit(1)
-		}
-	}
-
-	// BQ client
-	bq := createBQClient()
-	
+// Extraction functions
+func extract_campaings(AccountId string, bq *storage.BigQueryWriteClient) {
 	// CAMPAIGNS
 	params := url.Values {
 		"date_preset": { "maximum" },
 		"limit": { "100" },
 	}
+
 	campaign_fields := []string{
 		"id",
 		"account_id",
@@ -416,13 +510,14 @@ func main() {
 		"topline_id",
 		"updated_time",
 	}
-	edge := fmt.Sprintf("/%s/campaigns", os.Getenv("ACCOUNT_ID"))
+	
+	edge := fmt.Sprintf("/%s/campaigns", AccountId)
 	req, err := build_request(edge, params, campaign_fields)
 	if err != nil {
 		fmt.Println("Error building request")
 	}
 	fmt.Println("Extracting campaigns...")
-	data, err := extract(req, "campaigns/")
+	data, err := extract(req)
 	if err != nil {
 		//TODO: Handle
 		fmt.Println(err)
@@ -433,7 +528,12 @@ func main() {
 	log.Println("Serializing json data into proto messages")
 	var campaingsData []protoreflect.ProtoMessage
 	for _, node := range(data){ 
-		messageProto := proto.Message(&node)
+		// Convert the Node to the campaings objective
+		campaignProto, err := nodeToCampaign(node)
+		if err != nil {
+			log.Fatal(err)
+		}
+		messageProto := proto.Message(campaignProto)
 		campaingsData = append(campaingsData, messageProto)
 	}
 
@@ -446,6 +546,46 @@ func main() {
 	table := "campaigns"
 	trace := "historical-extraction"
 	writeRows(bq, desc, campaingsData, project, dataset, table, trace)
+}
+
+
+func main() {
+
+	// Initialize the program
+	environmentPtr := flag.String("environment", "", "Specify the environment (e.g., dev or prod)")
+	adAccountIdPtr := flag.String("ad-account-id", "", "Account Id to extract the data from")
+	var entities stringSliceFlag
+	flag.Var(&entities, "entities", "List of entities to extract")
+	flag.Parse()
+
+
+	// Load base environment variables from the .env file
+	fmt.Println("Loading base environment")
+	if err := godotenv.Load(".env"); err != nil {
+		fmt.Println("Error loading base environment:", err)
+		os.Exit(1)
+	}
+
+	// Load specific environment variables if an environment is specified
+	if *environmentPtr != "" {
+		envFileName := fmt.Sprintf("%s.env", *environmentPtr)
+		fmt.Printf("Loading %s environment\n", *environmentPtr)
+		if err := godotenv.Load(envFileName); err != nil {
+			fmt.Printf("Error loading %s environment: %v\n", *environmentPtr, err)
+			os.Exit(1)
+		}
+	}
+
+	// BQ client
+	bq := createBQClient()
+	
+	for _, entity := range entities {
+		fmt.Printf("Extracting entity: %s\n", entity)
+		switch entity {
+		case "campaigns":
+			extract_campaings(*adAccountIdPtr, bq)
+		}
+	}
 	
 	/*
 	// AD SETS

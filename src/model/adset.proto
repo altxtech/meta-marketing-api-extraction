@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option go_package = "meta_marketing_extract/model";
+import "google/protobuf/timestamp.proto";
+
+message AdSet {
+  int64 id = 1;
+  int64 account_id = 2;
+  int64 asset_feed_id = 3;
+  int64 bid_amount = 4;
+  string bid_strategy = 5;
+  string billing_event = 6;
+  int64 budget_remaining = 7;
+  int64 campaign_active_time = 8;
+  string campaign_attribution = 9;
+  int64 campaign_id = 10;
+  string configured_status = 11;
+  google.protobuf.Timestamp created_time = 12;
+  int64 daily_min_spend_target = 14;
+  int64 daily_spend_cap = 15;
+  string destination_type = 16;
+  string dsa_beneficiary = 17;
+  string dsa_payor = 18;
+  string effective_status = 19;
+  google.protobuf.Timestamp end_time = 20;
+  int64 instagram_actor_id = 21;
+  bool is_budget_schedule_enabled = 22;
+  bool is_dynamic_creative = 23;
+  int64 lifetime_budget = 24;
+  int64 lifetime_imps = 25;
+  int64 lifetime_min_spend_target = 26;
+  int64 lifetime_spend_cap = 27;
+  string multi_optimization_goal_weight = 28;
+  string name = 29;
+  string optimization_goal = 30;
+  string optimization_sub_event = 31;
+  bool recurring_budget_semantics = 32;
+  string review_feedback = 33;
+  int64 rf_prediction_id = 34;
+  int64 source_adset_id = 35;
+  google.protobuf.Timestamp start_time = 36;
+  string status = 37;
+  google.protobuf.Timestamp updated_time = 38;
+  bool use_new_app_click = 39;
+}
+

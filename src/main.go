@@ -408,6 +408,96 @@ func nodeToAdset( node Node ) ( *model.AdSet, error ){
 	return adset, nil
 }
 
+func nodeToAd(node Node) (*model.Ad, error) {
+	ad := &model.Ad{}
+
+	// Parse and set fields
+	var ok bool
+	var val int64
+
+	// id
+	if val, ok = parseAsNumericString(node, "id"); ok {
+		ad.Id = val
+	}
+
+	// account_id
+	if val, ok = parseAsNumericString(node, "account_id"); ok {
+		ad.AccountId = val
+	}
+
+	// ad_active_time
+	if val, ok = parseAsNumericString(node, "ad_active_time"); ok {
+		ad.AdActiveTime = val
+	}
+
+	// adset_id
+	if val, ok = parseAsNumericString(node, "adset_id"); ok {
+		ad.AdsetId = val
+	}
+
+	// bid_amount
+	if val, ok = parseAsNumericString(node, "bid_amount"); ok {
+		ad.BidAmount = val
+	}
+
+	// campaign_id
+	if val, ok = parseAsNumericString(node, "campaign_id"); ok {
+		ad.CampaignId = val
+	}
+
+	// configured_status
+	if valStr, ok := parseAsString(node, "configured_status"); ok {
+		ad.ConfiguredStatus = valStr
+	}
+
+	// conversion_domain
+	if valStr, ok := parseAsString(node, "conversion_domain"); ok {
+		ad.ConversionDomain = valStr
+	}
+
+	// created_time
+	if ts, ok := parseAsTimestamp(node, "created_time"); ok {
+		ad.CreatedTime = ts
+	}
+
+	// effective_status
+	if valStr, ok := parseAsString(node, "effective_status"); ok {
+		ad.EffectiveStatus = valStr
+	}
+
+	// meta_reward_adgroup_status
+	if valStr, ok := parseAsString(node, "meta_reward_adgroup_status"); ok {
+		ad.MetaRewardAdgroupStatus = valStr
+	}
+
+	// name
+	if valStr, ok := parseAsString(node, "name"); ok {
+		ad.Name = valStr
+	}
+
+	// preview_shareable_link
+	if valStr, ok := parseAsString(node, "preview_shareable_link"); ok {
+		ad.PreviewShareableLink = valStr
+	}
+
+	// source_ad_id
+	if val, ok = parseAsNumericString(node, "source_ad_id"); ok {
+		ad.SourceAdId = val
+	}
+
+	// status
+	if valStr, ok := parseAsString(node, "status"); ok {
+		ad.Status = valStr
+	}
+
+	// updated_time
+	if ts, ok := parseAsTimestamp(node, "updated_time"); ok {
+		ad.UpdatedTime = ts
+	}
+
+	return ad, nil
+}
+
 
 func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 
@@ -792,7 +882,64 @@ func extractAdsets(AccountId string, bq *storage.BigQueryWriteClient){
 	table := "adsets"
 	trace := "historical-extraction"
 	writeRows(bq, desc, adsetsData, project, dataset, table, trace)
+}
 
+func extractAds(AccountId string, bq *storage.BigQueryWriteClient){
+	
+	// ADS 
+	params := StdQueryParams()
+	ads_fields := []string{
+		"id",
+		"account_id",
+		"ad_active_time",
+		"adset_id",
+		"bid_amount",
+		"campaign_id",
+		"configured_status",
+		"conversion_domain",
+		"created_time",
+		"effective_status",
+		"meta_reward_adgroup_status",
+		"name",
+		"preview_shareable_link",
+		"source_ad_id",
+		"status",
+		"updated_time",
+	}
+	edge := fmt.Sprintf("/%s/ads", AccountId)
+	req, err := build_request(edge, params, ads_fields)
+	if err != nil {
+		fmt.Println("Error building request: ", err)
+	}
+	fmt.Println("Extracting Ad Sets")
+	data, err := extract(req)
+	if err != nil {
+		fmt.Println("Error extraction ad sets: ", err)
+	}
+	fmt.Printf("Total rows extracted: %d\n", len(data))
+
+	// Serialize the Data
+	log.Println("Serializing json data into proto messages")
+	var adsData []protoreflect.ProtoMessage
+	for _, node := range(data){ 
+		// Convert the Node to the campaings objective
+		adProto, err := nodeToAd(node)
+		if err != nil {
+			log.Fatal(err)
+		}
+		messageProto := proto.Message(adProto)
+		adsData = append(adsData, messageProto)
+	}
+
+	// Write data
+	log.Println("Writing rows")
+	var ad model.Ad
+	desc := getDescriptor(&ad)
+	project := os.Getenv("PROJECT_ID")
+	dataset := os.Getenv("DATASET_ID")
+	table := "ads"
+	trace := "historical-extraction"
+	writeRows(bq, desc, adsData, project, dataset, table, trace)
 }
 
 func main() {
@@ -833,86 +980,13 @@ func main() {
 		
 		case "adsets":
 			extractAdsets(*adAccountIdPtr, bq)
+
+		case "ads":
+			extractAds(*adAccountIdPtr, bq)
 		}
 	}
 	
 	/*
-
-	// ADS
-	params = url.Values {
-		"date_preset": { "maximum" },
-		"limit": { "100" },
-	}
-	ads_fields := []string{
-		"id",
-		"account_id",
-		"ad_active_time",
-		"ad_schedule_end_time",
-		"ad_schedule_start_time",
-		"adset_id",
-		"bid_amount",
-		"campaign_id",
-		"configured_status",
-		"conversion_domain",
-		"created_time",
-		"effective_status",
-		"meta_reward_adgroup_status",
-		"name",
-		"preview_shareable_link",
-		"source_ad_id",
-		"status",
-		"updated_time",
-	}
-	edge = fmt.Sprintf("/%s/ads", os.Getenv("ACCOUNT_ID"))
-	req, err = build_request(edge, params, ads_fields)
-	if err != nil {
-		fmt.Println("Error building request: ", err)
-	}
-	fmt.Println("Extracting Ads")
-	// Params are the same for campaigns
-	ads_ids, err := extract(req, "ads/")
-	if err != nil {
-		fmt.Println("Error extracting ads: ", err)
-	}
-
-	// ADS INSIGHTS
-	params = url.Values { 
-		"date_preset": { "maximum" },
-		"level": { "ad" }, "limit": { "100" }, 
-	} 
-	ads_insights_fields := []string {
-		"account_id",
-		"account_name",
-		"ad_id",
-		"ad_name",
-		"adset_id",
-		"adset_name",
-		"campaign_id",
-		"campaign_name",
-		"clicks",
-		"cpc",
-		"cpm",
-		"cpp",
-		"created_time",
-		"ctr",
-		"date_start",
-		"date_stop",
-		"frequency",
-		"full_view_impressions",
-		"full_view_reach",
-		"impressions",
-		"reach",
-		"social_spend",
-		"spend",
-		"updated_time",
-	}
-	edge = fmt.Sprintf("/%s/insights", os.Getenv("ACCOUNT_ID"))
-	req, err = build_request(edge, params, ads_insights_fields)
-	fmt.Println("Extracting ads insights")
-	_, err = extract(req, "insights/")
-	if err != nil { 
-		fmt.Println("Error extracting insights: ", err)
-	}
 
 	// AD LEADS
 	// For each ad

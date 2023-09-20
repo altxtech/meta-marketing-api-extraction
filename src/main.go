@@ -588,6 +588,73 @@ func nodeToAd(node Node) (*model.Ad, error) {
 	return ad, nil
 }
 
+func nodeToUserLeadGenInfo(node Node) (*model.UserLeadGenInfo, error){
+
+	lead := &model.UserLeadGenInfo{}
+	var ok bool
+	var intVal int64
+	var strVal string
+
+	if intVal, ok = parseAsNumericString(node, "id"); ok {
+		lead.Id = intVal
+	}
+	if intVal, ok = parseAsNumericString(node, "ad_id"); ok {
+		lead.AdId = intVal
+	}
+	if strVal, ok = parseAsString(node, "ad_name"); ok {
+		lead.AdName = strVal
+	}
+	if intVal, ok = parseAsNumericString(node, "adset_id"); ok {
+		lead.AdsetId = intVal
+	}
+	if strVal, ok = parseAsString(node, "adset_name"); ok {
+		lead.AdsetName = strVal
+	}
+	if intVal, ok = parseAsNumericString(node, "campaign_id"); ok {
+		lead.CampaignId = intVal
+	}
+	if strVal, ok = parseAsString(node, "campaign_name"); ok {
+		lead.CampaignName = strVal
+	}
+	if ts, ok := parseAsTimestamp(node, "created_time", "2006-01-02T15:04:05-0700"); ok {
+		lead.CreatedTime = ts
+	}
+
+	if mapVal, ok := node["field_data"].([]map[string]interface{}); ok {
+		var fieldData []*model.FieldDataEntry	
+		// Iterate through field data entry
+		for _, jsonEntry := range(mapVal) {
+			entry := &model.FieldDataEntry{}
+			if entryName, ok := jsonEntry["name"].(string); ok {
+				entry.Name = entryName
+			}
+			if entryValues, ok := jsonEntry["values"].([]string); ok {
+				entry.Values = entryValues
+			}
+
+			fieldData = append(fieldData, entry)
+		}
+		lead.FieldData = fieldData
+	}
+
+	if intVal, ok = parseAsNumericString(node, "form_id"); ok {
+		lead.FormId = intVal
+	}
+	if boolVal, ok := parseAsBool(node, "is_organic"); ok {
+		lead.IsOrganic = boolVal
+	}
+	if strVal, ok = parseAsString(node, "partner_name"); ok {
+		lead.PartnerName = strVal
+	}
+	if strVal, ok = parseAsString(node, "platform"); ok {
+		lead.Platform = strVal
+	}
+	if strVal, ok = parseAsString(node, "post"); ok {
+		lead.Post = strVal
+	}
+
+  	return lead, nil 
+}
 
 func exec_request(req http.Request) (MetaGraphAPIResponse, error) {
 
@@ -1102,6 +1169,81 @@ func extractAdInsights(AccountId string, bq *storage.BigQueryWriteClient){
 	writeRows(bq, desc, adInsightsData, project, dataset, table, trace)
 }
 
+func extractUserLeadGenInfo(AccountId string, bq *storage.BigQueryWriteClient){
+
+	// AD LEADS
+	// List existing ads
+	params := StdQueryParams()
+	adFields := []string{ "id" }
+	edge := fmt.Sprintf("%s/ads", AccountId)
+	req, err := build_request(edge, params, adFields)
+	if err != nil {
+		log.Fatal("Error build_request: ", err)
+	}
+	adNodes, err := extract(req)
+	if err != nil {
+		log.Fatal("Error extracting ads: ", err)
+	}
+
+	// adsIds	
+	adsIds := []string{}
+	for _, node := range(adNodes){
+		if val, ok := node["id"].(string); ok {
+			adsIds = append(adsIds, val) 
+		}
+	}
+
+	// For each ad
+	for _, adId := range(adsIds){
+
+		log.Println("Extracting leads for ad ", adId)
+
+		// This edge takes no query parameters and no fields
+		params = url.Values{}
+		leadsFields := []string{}
+		edge := fmt.Sprintf("%s/leads", adId)
+		req, err := build_request(edge, params, leadsFields)
+		if err != nil {
+			log.Println("Error building request: ", err)
+			continue
+		}
+
+		// Execute the request
+		// Lead files are going to be small enough that
+		// I won't worry about partitioning by ad_id
+		leadNodes, err := extract(req)
+		if err != nil {
+			fmt.Println("Error extracting data: ", err)
+		}
+
+		fmt.Printf("Total rows extracted: %d\n", len(leadNodes))
+
+		// Serialize the Data
+		log.Println("Serializing json data into proto messages")
+		var userLeadGenInfoData []protoreflect.ProtoMessage
+		for _, node := range(leadNodes){ 
+			// fmt.Println(node) // Debug
+			// Convert the Node to the campaings objective
+			userLeadGenInfoProto, err := nodeToUserLeadGenInfo(node)
+			if err != nil {
+				log.Fatal(err)
+			}
+			messageProto := proto.Message(userLeadGenInfoProto)
+			userLeadGenInfoData = append(userLeadGenInfoData, messageProto)
+		}
+
+		// Write data
+		log.Println("Writing rows")
+		var userLeadGenInfo model.UserLeadGenInfo
+		desc := getDescriptor(&userLeadGenInfo)
+		project := os.Getenv("PROJECT_ID")
+		dataset := os.Getenv("DATASET_ID")
+		table := "user_lead_gen_info"
+		trace := "historical-extraction"
+		writeRows(bq, desc, userLeadGenInfoData, project, dataset, table, trace)
+	}
+}
+
 func main() {
 
 	// Initialize the program
@@ -1146,31 +1288,10 @@ func main() {
 		
 		case "ad_insights":
 			extractAdInsights(*adAccountIdPtr, bq)
+
+		case "ad_leads":
+			extractUserLeadGenInfo(*adAccountIdPtr, bq)
 		}
 	}
 	
-	/*
-
-	// AD LEADS
-	// For each ad
-	for i := range(ads_ids){
-
-		fmt.Println("Extracting leads for ad ", ads_ids[i])
-		// This edge takes no query parameters and no fields
-		params = url.Values{}
-		leads_fields := []string{}
-		edge := fmt.Sprintf("%s/leads", ads_ids[i])
-		req, err = build_request(edge, params, leads_fields)
-		if err != nil {
-			fmt.Println("Error building request: ", err)
-		}
-		// Execute the request
-		// Lead files are going to be small enough that
-		// I won't worry about partitioning by ad_id
-		_, err := extract(req, fmt.Sprintf("leads/%d/", ads_ids[i]))
-		if err != nil {
-			fmt.Println("Error extracting data: ", err)
-		}
-	}
-	*/
 }

@@ -1,11 +1,11 @@
 [
 	{
 		"name": "id",
-		"type": "STRING"
+		"type": "INTEGER"
 	},
 	{
 		"name": "ad_id",
-		"type": "STRING"
+		"type": "INTEGER"
 	},
 	{
 		"name": "ad_name",
@@ -13,7 +13,7 @@
 	},
 	{
 		"name": "adset_id",
-		"type": "STRING"
+		"type": "INTEGER"
 	},
 	{
 		"name": "adset_name",
@@ -21,7 +21,7 @@
 	},
 	{
 		"name": "campaign_id",
-		"type": "STRING"
+		"type": "INTEGER"
 	},
 	{
 		"name": "campaign_name",
@@ -29,15 +29,27 @@
 	},
 	{
 		"name": "created_time",
-		"type": "DATETIME"
+		"type": "TIMESTAMP"
 	},
 	{
 		"name": "field_data",
-		"type": "JSON"
+		"type": "STRUCT",
+		"mode": "REPEATED",
+		"fields": [
+			{
+				"name": "name",
+				"type": "STRING"
+			},
+			{
+				"name": "values",
+				"type": "STRING",
+				"mode": "REPEATED"
+			}
+		]
 	},
 	{
 		"name": "form_id",
-		"type": "STRING"
+		"type": "INTEGER"
 	},
 	{
 		"name": "is_organic",
@@ -55,4 +67,4 @@
 		"name": "post",
 		"type": "STRING"
 	}
-	]
+]

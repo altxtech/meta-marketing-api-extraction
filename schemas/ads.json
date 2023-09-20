@@ -1,49 +1,37 @@
 [
   {
     "name": "id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Unique identifier for the ad"
   },
   {
     "name": "account_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Reference to the account identifier from ad_account_id"
   },
   {
     "name": "ad_active_time",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Ad active time"
   },
   {
-    "name": "ad_schedule_end_time",
-    "type": "TIMESTAMP",
-    "mode": "NULLABLE",
-    "description": "End time of the ad schedule"
-  },
-  {
-    "name": "ad_schedule_start_time",
-    "type": "TIMESTAMP",
-    "mode": "NULLABLE",
-    "description": "Start time of the ad schedule"
-  },
-  {
     "name": "adset_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Reference to the adset identifier from adset.id"
   },
   {
     "name": "bid_amount",
-    "type": "INT64",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Bid amount for the ad"
   },
   {
     "name": "campaign_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Reference to the campaign identifier from campaign.id"
   },
@@ -91,7 +79,7 @@
   },
   {
     "name": "source_ad_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Source ad identifier"
   },
@@ -103,7 +91,7 @@
   },
   {
     "name": "updated_time",
-    "type": "DATETIME",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
     "description": "Time when the ad was last updated"
   }

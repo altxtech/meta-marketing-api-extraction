@@ -1,13 +1,13 @@
 [
   {
     "name": "id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "REQUIRED",
     "description": "Unique identifier for the ad set"
   },
   {
     "name": "account_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "REQUIRED",
     "description": "Reference to the account identifier from ad_accounts"
   },
@@ -19,7 +19,7 @@
   },
   {
     "name": "bid_amount",
-    "type": "INT64",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Bid amount"
   },
@@ -37,13 +37,13 @@
   },
   {
     "name": "budget_remaining",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Remaining budget for the ad set"
   },
   {
     "name": "campaign_active_time",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Campaign active time"
   },
@@ -55,7 +55,7 @@
   },
   {
     "name": "campaign_id",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Campaign identifier"
   },
@@ -73,19 +73,19 @@
   },
   {
     "name": "daily_budget",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Daily budget for the ad set"
   },
   {
     "name": "daily_min_spend_target",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Daily minimum spend target"
   },
   {
     "name": "daily_spend_cap",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Daily spend cap for the ad set"
   },
@@ -121,7 +121,7 @@
   },
   {
     "name": "instagram_actor_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Instagram actor identifier"
   },
@@ -139,25 +139,25 @@
   },
   {
     "name": "lifetime_budget",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Lifetime budget for the ad set"
   },
   {
     "name": "lifetime_imps",
-    "type": "INT64",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Lifetime impressions for the ad set"
   },
   {
     "name": "lifetime_min_spend_target",
-    "type": "NUMERIC",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Lifetime minimum spend target"
   },
   {
     "name": "lifetime_spend_cap",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Lifetime spend cap for the ad set"
   },
@@ -199,13 +199,13 @@
   },
   {
     "name": "rf_prediction_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "RF prediction identifier"
   },
   {
     "name": "source_adset_id",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Source ad set identifier"
   },

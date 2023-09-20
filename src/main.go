@@ -64,7 +64,48 @@ type MetaGraphAPIResponse struct {
 
 
 // Conversions to proto
-// Conversions to proto
+func parseAsString(node Node, key string) (string, bool) {
+	val, ok := node[key].(string)
+	return val, ok
+}
+
+func parseAsNumericString(node Node, key string) (int64, bool) {
+	valStr, ok := node[key].(string)
+	if !ok {
+		return 0, false
+	}
+	intVal, err := strconv.ParseInt(valStr, 10, 64)
+	if err != nil {
+		log.Fatalf("Error parsing %s:%s as int64: %v", key, valStr, err)
+	}
+	return intVal, true
+}
+
+func parseAsInt(node Node, key string) (int64, bool) {
+	val, ok := node[key].(int)
+	if !ok {
+		return 0, false
+	}
+	return int64(val), true
+}
+
+func parseAsTimestamp(node Node, key string) (*timestamppb.Timestamp, bool) {
+	const layout string = "2006-01-02T15:04:05-0700"
+	valStr, ok := node[key].(string)
+	if !ok {
+		return nil, false
+	}
+	timeVal, err := time.Parse(layout, valStr)
+	if err != nil {
+		log.Fatalf("Error parsing %s:%s as timestamp: %v", key, valStr, err)
+	}
+	return timestamppb.New(timeVal), true
+}
+
+func parseAsBool(node Node, key string) (bool, bool) {
+	val, ok := node[key].(bool)
+	return val, ok
+}
 
 func nodeToCampaign(node Node) (*model.Campaign, error) {
 	const layout string = "2006-01-02T15:04:05-0700"
@@ -245,6 +286,126 @@ func nodeToCampaign(node Node) (*model.Campaign, error) {
 	}
 
 	return campaign, nil
+}
+
+func nodeToAdset( node Node ) ( *model.AdSet, error ){
+	adset := &model.AdSet{}
+
+	if val, ok := parseAsNumericString(node, "id"); ok {
+		adset.Id = val
+	}
+	if val, ok := parseAsNumericString(node, "account_id"); ok {
+		adset.AccountId = val
+	}
+	if val, ok := parseAsNumericString(node, "asset_feed_id"); ok {
+		adset.AssetFeedId = val
+	}
+	if val, ok := parseAsInt(node, "bid_amount"); ok {
+		adset.BidAmount = val
+	}
+	if val, ok := parseAsString(node, "bid_strategy"); ok {
+		adset.BidStrategy = val
+	}
+	if val, ok := parseAsString(node, "billing_event"); ok {
+		adset.BillingEvent = val
+	}
+	if val, ok := parseAsNumericString(node, "budget_remaining"); ok {
+		adset.BudgetRemaining = val
+	}
+	if val, ok := parseAsNumericString(node, "campaign_active_time"); ok {
+		adset.CampaignActiveTime = val
+	}
+	if val, ok := parseAsString(node, "campaign_attribution"); ok {
+		adset.CampaignAttribution = val
+	}
+	if val, ok := parseAsNumericString(node, "campaign_id"); ok {
+		adset.CampaignId = val
+	}
+	if val, ok := parseAsString(node, "configured_status"); ok {
+		adset.ConfiguredStatus = val
+	}
+	if val, ok := parseAsTimestamp(node, "created_time"); ok {
+		adset.CreatedTime = val
+	}
+	if val, ok := parseAsNumericString(node, "daily_min_spend_target"); ok {
+		adset.DailyMinSpendTarget = val
+	}
+	if val, ok := parseAsNumericString(node, "daily_spend_cap"); ok {
+		adset.DailySpendCap = val
+	}
+	if val, ok := parseAsString(node, "destination_type"); ok {
+		adset.DestinationType = val
+	}
+	if val, ok := parseAsString(node, "dsa_beneficiary"); ok {
+		adset.DsaBeneficiary = val
+	}
+	if val, ok := parseAsString(node, "dsa_payor"); ok {
+		adset.DsaPayor = val
+	}
+	if val, ok := parseAsString(node, "effective_status"); ok {
+		adset.EffectiveStatus = val
+	}
+	if val, ok := parseAsTimestamp(node, "end_time"); ok {
+		adset.EndTime = val
+	}
+	if val, ok := parseAsNumericString(node, "instagram_actor_id"); ok {
+		adset.InstagramActorId = val
+	 }
+	if val, ok := parseAsBool(node, "is_budget_schedule_enabled"); ok {
+		adset.IsBudgetScheduleEnabled = val
+	}
+	if val, ok := parseAsBool(node, "is_dynamic_creative"); ok {
+		adset.IsDynamicCreative = val
+	}
+	if val, ok := parseAsNumericString(node, "lifetime_budget"); ok {
+		adset.LifetimeBudget = val
+	}
+	if val, ok := parseAsInt(node, "lifetime_imps"); ok {
+		adset.LifetimeImps = val
+	}
+	if val, ok := parseAsNumericString(node, "lifetime_min_spend_target"); ok {
+		adset.LifetimeMinSpendTarget = val
+	}
+	if val, ok := parseAsNumericString(node, "lifetime_spend_cap"); ok {
+		adset.LifetimeSpendCap = val
+	}
+	if val, ok := parseAsString(node, "multi_optimization_goal_weight"); ok {
+		adset.MultiOptimizationGoalWeight = val
+	}
+	if val, ok := parseAsString(node, "name"); ok {
+		adset.Name = val
+	}
+	if val, ok := parseAsString(node, "optimization_goal"); ok {
+		adset.OptimizationGoal = val
+	}
+	if val, ok := parseAsString(node, "optimization_sub_event"); ok {
+		adset.OptimizationSubEvent = val
+	}
+	if val, ok := parseAsBool(node, "recurring_budget_semantics"); ok {
+		adset.RecurringBudgetSemantics = val
+	}
+	if val, ok := parseAsString(node, "review_feedback"); ok {
+		adset.ReviewFeedback = val
+	}
+	if val, ok := parseAsInt(node, "rf_prediction_id"); ok {
+		adset.RfPredictionId = val
+	}
+	if val, ok := parseAsInt(node, "source_adset_id"); ok {
+		adset.SourceAdsetId = val
+	}
+	if val, ok := parseAsTimestamp(node, "start_time"); ok {
+		adset.StartTime = val
+	}
+	if val, ok := parseAsString(node, "status"); ok {
+		adset.Status = val
+	}
+	if val, ok := parseAsTimestamp(node, "updated_time"); ok {
+		adset.UpdatedTime = val
+	}
+	if val, ok := parseAsBool(node, "use_new_app_click"); ok {
+		adset.UseNewAppClick = val
+	}
+	return adset, nil
 }
 
 
@@ -470,14 +631,17 @@ func writeRows(
 }
 
 
-// Extraction functions
-func extract_campaings(AccountId string, bq *storage.BigQueryWriteClient) {
-	// CAMPAIGNS
-	params := url.Values {
+func StdQueryParams() url.Values {
+	return url.Values {
 		"date_preset": { "maximum" },
 		"limit": { "100" },
 	}
+}
 
+// Extraction functions
+func extractCampaigns(AccountId string, bq *storage.BigQueryWriteClient) {
+	// CAMPAIGNS
+	params := StdQueryParams()
 	campaign_fields := []string{
 		"id",
 		"account_id",
@@ -548,51 +712,10 @@ func extract_campaings(AccountId string, bq *storage.BigQueryWriteClient) {
 	writeRows(bq, desc, campaingsData, project, dataset, table, trace)
 }
 
-
-func main() {
-
-	// Initialize the program
-	environmentPtr := flag.String("environment", "", "Specify the environment (e.g., dev or prod)")
-	adAccountIdPtr := flag.String("ad-account-id", "", "Account Id to extract the data from")
-	var entities stringSliceFlag
-	flag.Var(&entities, "entities", "List of entities to extract")
-	flag.Parse()
-
-
-	// Load base environment variables from the .env file
-	fmt.Println("Loading base environment")
-	if err := godotenv.Load(".env"); err != nil {
-		fmt.Println("Error loading base environment:", err)
-		os.Exit(1)
-	}
-
-	// Load specific environment variables if an environment is specified
-	if *environmentPtr != "" {
-		envFileName := fmt.Sprintf("%s.env", *environmentPtr)
-		fmt.Printf("Loading %s environment\n", *environmentPtr)
-		if err := godotenv.Load(envFileName); err != nil {
-			fmt.Printf("Error loading %s environment: %v\n", *environmentPtr, err)
-			os.Exit(1)
-		}
-	}
-
-	// BQ client
-	bq := createBQClient()
+func extractAdsets(AccountId string, bq *storage.BigQueryWriteClient){
 	
-	for _, entity := range entities {
-		fmt.Printf("Extracting entity: %s\n", entity)
-		switch entity {
-		case "campaigns":
-			extract_campaings(*adAccountIdPtr, bq)
-		}
-	}
-	
-	/*
 	// AD SETS
-	params = url.Values {
-		"date_preset": { "maximum" },
-		"limit": { "100" },
-	}
+	params := StdQueryParams()
 	adsets_fields := []string{
 		"id",
 		"account_id",
@@ -635,16 +758,85 @@ func main() {
 		"updated_time",
 		"use_new_app_click",
 	}
-	edge = fmt.Sprintf("/%s/adsets", os.Getenv("ACCOUNT_ID"))
-	req, err = build_request(edge, params, adsets_fields)
+	edge := fmt.Sprintf("/%s/adsets", AccountId)
+	req, err := build_request(edge, params, adsets_fields)
 	if err != nil {
 		fmt.Println("Error building request: ", err)
 	}
 	fmt.Println("Extracting Ad Sets")
-	_, err = extract(req, "adsets/")
+	data, err := extract(req)
 	if err != nil {
 		fmt.Println("Error extraction ad sets: ", err)
 	}
+	fmt.Printf("Total rows extracted: %d\n", len(data))
+
+	// Serialize the Data
+	log.Println("Serializing json data into proto messages")
+	var adsetsData []protoreflect.ProtoMessage
+	for _, node := range(data){ 
+		// Convert the Node to the campaings objective
+		adsetProto, err := nodeToAdset(node)
+		if err != nil {
+			log.Fatal(err)
+		}
+		messageProto := proto.Message(adsetProto)
+		adsetsData = append(adsetsData, messageProto)
+	}
+
+	// Write data
+	log.Println("Writing rows")
+	var adset model.AdSet
+	desc := getDescriptor(&adset)
+	project := os.Getenv("PROJECT_ID")
+	dataset := os.Getenv("DATASET_ID")
+	table := "adsets"
+	trace := "historical-extraction"
+	writeRows(bq, desc, adsetsData, project, dataset, table, trace)
+
+}
+
+func main() {
+
+	// Initialize the program
+	environmentPtr := flag.String("environment", "", "Specify the environment (e.g., dev or prod)")
+	adAccountIdPtr := flag.String("ad-account-id", "", "Account Id to extract the data from")
+	var entities stringSliceFlag
+	flag.Var(&entities, "entities", "List of entities to extract")
+	flag.Parse()
+
+
+	// Load base environment variables from the .env file
+	fmt.Println("Loading base environment")
+	if err := godotenv.Load(".env"); err != nil {
+		fmt.Println("Error loading base environment:", err)
+		os.Exit(1)
+	}
+
+	// Load specific environment variables if an environment is specified
+	if *environmentPtr != "" {
+		envFileName := fmt.Sprintf("%s.env", *environmentPtr)
+		fmt.Printf("Loading %s environment\n", *environmentPtr)
+		if err := godotenv.Load(envFileName); err != nil {
+			fmt.Printf("Error loading %s environment: %v\n", *environmentPtr, err)
+			os.Exit(1)
+		}
+	}
+
+	// BQ client
+	bq := createBQClient()
+	
+	for _, entity := range entities {
+		fmt.Printf("Extracting entity: %s\n", entity)
+		switch entity {
+		case "campaigns":
+			extractCampaigns(*adAccountIdPtr, bq)
+		
+		case "adsets":
+			extractAdsets(*adAccountIdPtr, bq)
+		}
+	}
+	
+	/*
 
 	// ADS
 	params = url.Values {

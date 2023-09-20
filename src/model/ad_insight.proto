@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package meta_marketing_extract;
+
+option go_package = "meta_marketing_extract/model";
+import "google/protobuf/timestamp.proto";
+
+message AdInsight {
+  int64 account_id = 2 [json_name = "account_id"];
+  string account_name = 3 [json_name = "account_name"];
+  int64 ad_id = 4 [json_name = "ad_id"];
+  string ad_name = 5 [json_name = "ad_name"];
+  int64 adset_id = 6 [json_name = "adset_id"];
+  string adset_name = 7 [json_name = "adset_name"];
+  int64 campaign_id = 8 [json_name = "campaign_id"];
+  string campaign_name = 9 [json_name = "campaign_name"];
+  int64 clicks = 10;
+  double cpc = 11;
+  double cpm = 12;
+  double cpp = 13;
+  google.protobuf.Timestamp created_time = 14 [json_name = "created_time"];
+  double ctr = 15;
+  google.protobuf.Timestamp date_start = 16 [json_name = "date_start"];
+  google.protobuf.Timestamp date_stop = 17 [json_name = "date_stop"];
+  double frequency = 18;
+  int64 full_view_impressions = 19 [json_name = "full_view_impressions"];
+  int64 full_view_reach = 20 [json_name = "full_view_reach"];
+  int64 impressions = 21;
+  int64 reach = 22;
+  string social_spend = 23 [json_name = "social_spend"];
+  string spend = 24;
+  google.protobuf.Timestamp updated_time = 25 [json_name = "updated_time"];
+}

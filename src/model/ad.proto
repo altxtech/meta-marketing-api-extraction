@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "meta_marketing_extract/model";
+import "google/protobuf/timestamp.proto";
+
+message Ad {
+  int64 id = 1 [json_name = "id"];
+  int64 account_id = 2 [json_name = "account_id"];
+  int64 ad_active_time = 3 [json_name = "ad_active_time"];
+  int64 adset_id = 6 [json_name = "adset_id"];
+  int64 bid_amount = 7 [json_name = "bid_amount"];
+  int64 campaign_id = 8 [json_name = "campaign_id"];
+  string configured_status = 9 [json_name = "configured_status"];
+  string conversion_domain = 10 [json_name = "conversion_domain"];
+  google.protobuf.Timestamp created_time = 11 [json_name = "created_time"];
+  string effective_status = 12 [json_name = "effective_status"];
+  string meta_reward_adgroup_status = 13 [json_name = "meta_reward_adgroup_status"];
+  string name = 14 [json_name = "name"];
+  string preview_shareable_link = 15 [json_name = "preview_shareable_link"];
+  int64 source_ad_id = 16 [json_name = "source_ad_id"];
+  string status = 17 [json_name = "status"];
+  google.protobuf.Timestamp updated_time = 18 [json_name = "updated_time"];
+}

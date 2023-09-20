@@ -81,6 +81,18 @@ func parseAsNumericString(node Node, key string) (int64, bool) {
 	return intVal, true
 }
 
+func parseAsFloatString(node Node, key string) (float64, bool) {
+	valStr, ok := node[key].(string)
+	if !ok {
+		return 0, false
+	}
+	floatVal, err := strconv.ParseFloat(valStr, 64)
+	if err != nil {
+		log.Fatalf("Error parsing %s:%s as int64: %v", key, valStr, err)
+	}
+	return floatVal, true
+}
+
 func parseAsInt(node Node, key string) (int64, bool) {
 	val, ok := node[key].(int)
 	if !ok {
@@ -89,8 +101,7 @@ func parseAsInt(node Node, key string) (int64, bool) {
 	return int64(val), true
 }
 
-func parseAsTimestamp(node Node, key string) (*timestamppb.Timestamp, bool) {
-	const layout string = "2006-01-02T15:04:05-0700"
+func parseAsTimestamp(node Node, key string, layout string) (*timestamppb.Timestamp, bool) {
 	valStr, ok := node[key].(string)
 	if !ok {
 		return nil, false
@@ -324,7 +335,7 @@ func nodeToAdset( node Node ) ( *model.AdSet, error ){
 	if val, ok := parseAsString(node, "configured_status"); ok {
 		adset.ConfiguredStatus = val
 	}
-	if val, ok := parseAsTimestamp(node, "created_time"); ok {
+	if val, ok := parseAsTimestamp(node, "created_time", "2006-01-02T15:04:05-0700"); ok {
 		adset.CreatedTime = val
 	}
 	if val, ok := parseAsNumericString(node, "daily_min_spend_target"); ok {
@@ -345,7 +356,7 @@ func nodeToAdset( node Node ) ( *model.AdSet, error ){
 	if val, ok := parseAsString(node, "effective_status"); ok {
 		adset.EffectiveStatus = val
 	}
-	if val, ok := parseAsTimestamp(node, "end_time"); ok {
+	if val, ok := parseAsTimestamp(node, "end_time", "2006-01-02T15:04:05-0700"); ok {
 		adset.EndTime = val
 	}
 	if val, ok := parseAsNumericString(node, "instagram_actor_id"); ok {
@@ -393,13 +404,13 @@ func nodeToAdset( node Node ) ( *model.AdSet, error ){
 	if val, ok := parseAsInt(node, "source_adset_id"); ok {
 		adset.SourceAdsetId = val
 	}
-	if val, ok := parseAsTimestamp(node, "start_time"); ok {
+	if val, ok := parseAsTimestamp(node, "start_time", "2006-01-02T15:04:05-0700"); ok {
 		adset.StartTime = val
 	}
 	if val, ok := parseAsString(node, "status"); ok {
 		adset.Status = val
 	}
-	if val, ok := parseAsTimestamp(node, "updated_time"); ok {
+	if val, ok := parseAsTimestamp(node, "updated_time", "2006-01-02T15:04:05-0700"); ok {
 		adset.UpdatedTime = val
 	}
 	if val, ok := parseAsBool(node, "use_new_app_click"); ok {
@@ -408,6 +419,85 @@ func nodeToAdset( node Node ) ( *model.AdSet, error ){
 	return adset, nil
 }
 
+func nodeToAdInsight(node Node) (*model.AdInsight, error) {
+	adInsight := &model.AdInsight{}
+
+	var ok bool
+	var intVal int64
+	var strVal string
+	var floatVal float64
+
+	if intVal, ok = parseAsNumericString(node, "account_id"); ok {
+		adInsight.AccountId = intVal
+	}
+	if strVal, ok = parseAsString(node, "account_name"); ok {
+		adInsight.AccountName = strVal
+	}
+	if intVal, ok = parseAsNumericString(node, "ad_id"); ok {
+		adInsight.AdId = intVal
+	}
+	if strVal, ok = parseAsString(node, "ad_name"); ok {
+		adInsight.AdName = strVal
+	}
+	if intVal, ok = parseAsNumericString(node, "adset_id"); ok {
+		adInsight.AdsetId = intVal
+	}
+	if strVal, ok = parseAsString(node, "adset_name"); ok {
+		adInsight.AdsetName = strVal
+	}
+	if intVal, ok = parseAsNumericString(node, "cammpaign_id"); ok {
+		adInsight.CampaignId = intVal
+	}
+	if strVal, ok = parseAsString(node, "campaign_name"); ok {
+		adInsight.CampaignName = strVal
+	}
+	if intVal, ok = parseAsNumericString(node, "clicks"); ok {
+		adInsight.Clicks = intVal
+	}
+	if floatVal, ok = parseAsFloatString(node, "cpc"); ok {
+		adInsight.Cpc = floatVal
+	}
+	if floatVal, ok = parseAsFloatString(node, "cpm"); ok {
+		adInsight.Cpm = floatVal
+	}
+	if floatVal, ok = parseAsFloatString(node, "cpp"); ok {
+		adInsight.Cpp = floatVal
+	}
+	if floatVal, ok = parseAsFloatString(node, "ctr"); ok {
+		adInsight.Ctr = floatVal
+	}
+	if timestampVal, ok := parseAsTimestamp(node, "date_start", "2006-01-02"); ok {
+		adInsight.DateStart = timestampVal
+	}	
+	if timestampVal, ok := parseAsTimestamp(node, "date_stop", "2006-01-02"); ok {
+		adInsight.DateStop = timestampVal
+	}	
+	if floatVal, ok = parseAsFloatString(node, "frequency"); ok {
+		adInsight.Ctr = floatVal
+	}
+	if intVal, ok = parseAsNumericString(node, "full_view_impressions"); ok {
+		adInsight.FullViewImpressions = intVal
+	}
+	if intVal, ok = parseAsNumericString(node, "full_view_reach"); ok {
+		adInsight.FullViewReach = intVal
+	}
+	if intVal, ok = parseAsNumericString(node, "impressions"); ok {
+		adInsight.Impressions = intVal
+	}
+	if intVal, ok = parseAsNumericString(node, "reach"); ok {
+		adInsight.Impressions = intVal
+	}
+	if strVal, ok = parseAsString(node, "social_spend"); ok {
+		adInsight.SocialSpend = strVal
+	}
+	if strVal, ok = parseAsString(node, "spend"); ok {
+		adInsight.Spend = strVal
+	}
+	if timestampVal, ok := parseAsTimestamp(node, "updated_time", "2006-01-02"); ok {
+		adInsight.UpdatedTime = timestampVal
+	}	
+	return adInsight, nil
+}
 func nodeToAd(node Node) (*model.Ad, error) {
 	ad := &model.Ad{}
 
@@ -456,7 +546,7 @@ func nodeToAd(node Node) (*model.Ad, error) {
 	}
 
 	// created_time
-	if ts, ok := parseAsTimestamp(node, "created_time"); ok {
+	if ts, ok := parseAsTimestamp(node, "created_time", "2006-01-02T15:04:05-0700"); ok {
 		ad.CreatedTime = ts
 	}
 
@@ -491,7 +581,7 @@ func nodeToAd(node Node) (*model.Ad, error) {
 	}
 
 	// updated_time
-	if ts, ok := parseAsTimestamp(node, "updated_time"); ok {
+	if ts, ok := parseAsTimestamp(node, "updated_time", "2006-01-02T15:04:05-0700"); ok {
 		ad.UpdatedTime = ts
 	}
 
@@ -802,7 +892,7 @@ func extractCampaigns(AccountId string, bq *storage.BigQueryWriteClient) {
 	writeRows(bq, desc, campaingsData, project, dataset, table, trace)
 }
 
-func extractAdsets(AccountId string, bq *storage.BigQueryWriteClient){
+func extractAdSets(AccountId string, bq *storage.BigQueryWriteClient){
 	
 	// AD SETS
 	params := StdQueryParams()
@@ -886,7 +976,7 @@ func extractAdsets(AccountId string, bq *storage.BigQueryWriteClient){
 
 func extractAds(AccountId string, bq *storage.BigQueryWriteClient){
 	
-	// ADS 
+	// ADS
 	params := StdQueryParams()
 	ads_fields := []string{
 		"id",
@@ -941,6 +1031,76 @@ func extractAds(AccountId string, bq *storage.BigQueryWriteClient){
 	trace := "historical-extraction"
 	writeRows(bq, desc, adsData, project, dataset, table, trace)
 }
+func extractAdInsights(AccountId string, bq *storage.BigQueryWriteClient){
+	
+	// ADS 
+	params := url.Values {
+		"date_preset": { "maximum" },
+		"level": { "ad" },
+		"limit": { "100" },
+	}
+
+	ad_insights_fields := []string{
+		"account_id",
+		"account_name",
+		"ad_id",
+		"ad_name",
+		"adset_id",
+		"adset_name",
+		"campaign_id",
+		"campaign_name",
+		"clicks",
+		"cpc",
+		"cpm",
+		"cpp",
+		"created_time",
+		"ctr",
+		"date_start",
+		"date_stop",
+		"frequency",
+		"full_view_impressions",
+		"full_view_reach",
+		"impressions",
+		"reach",
+		"social_spend",
+		"spend",
+		"updated_time",
+	}
+	edge := fmt.Sprintf("/%s/insights", AccountId)
+	req, err := build_request(edge, params, ad_insights_fields)
+	if err != nil {
+		fmt.Println("Error building request: ", err)
+	}
+	fmt.Println("Extracting Ad Insights")
+	data, err := extract(req)
+	if err != nil {
+		fmt.Println("Error extraction ad sets: ", err)
+	}
+	fmt.Printf("Total rows extracted: %d\n", len(data))
+
+	// Serialize the Data
+	log.Println("Serializing json data into proto messages")
+	var adInsightsData []protoreflect.ProtoMessage
+	for _, node := range(data){ 
+		// Convert the Node to the campaings objective
+		adInsightProto, err := nodeToAdInsight(node)
+		if err != nil {
+			log.Fatal(err)
+		}
+		messageProto := proto.Message(adInsightProto)
+		adInsightsData = append(adInsightsData, messageProto)
+	}
+
+	// Write data
+	log.Println("Writing rows")
+	var adInsight model.AdInsight
+	desc := getDescriptor(&adInsight)
+	project := os.Getenv("PROJECT_ID")
+	dataset := os.Getenv("DATASET_ID")
+	table := "ad_insights"
+	trace := "historical-extraction"
+	writeRows(bq, desc, adInsightsData, project, dataset, table, trace)
+}
 
 func main() {
 
@@ -979,10 +1139,13 @@ func main() {
 			extractCampaigns(*adAccountIdPtr, bq)
 		
 		case "adsets":
-			extractAdsets(*adAccountIdPtr, bq)
+			extractAdSets(*adAccountIdPtr, bq)
 
 		case "ads":
 			extractAds(*adAccountIdPtr, bq)
+		
+		case "ad_insights":
+			extractAdInsights(*adAccountIdPtr, bq)
 		}
 	}
 	

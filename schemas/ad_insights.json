@@ -1,11 +1,7 @@
 [
 	{
-		"name": "id",
-		"type": "STRING"
-	},
-	{
 		"name": "account_id",
-		"type": "STRING",
+		"type": "INTEGER",
 		"mode": "NULLABLE",
 		"description": "Reference to ad_accounts.id"
 	},
@@ -16,7 +12,7 @@
 	},
 	{
 		"name": "ad_id",
-		"type": "STRING",
+		"type": "INTEGER",
 		"mode": "NULLABLE"
 	},
 	{
@@ -26,7 +22,7 @@
 	},
 	{
 		"name": "adset_id",
-		"type": "STRING",
+		"type": "INTEGER",
 		"mode": "NULLABLE"
 	},
 	{
@@ -36,7 +32,7 @@
 	},
 	{
 		"name": "campaign_id",
-		"type": "STRING",
+		"type": "INTEGER",
 		"mode": "NULLABLE"
 	},
 	{
@@ -46,7 +42,7 @@
 	},
 	{
 		"name": "clicks",
-		"type": "INT64",
+		"type": "INTEGER",
 		"mode": "NULLABLE"
 	},
 	{
@@ -111,12 +107,12 @@
 	},
 	{
 		"name": "social_spend",
-		"type": "NUMERIC",
+		"type": "DECIMAL",
 		"mode": "NULLABLE"
 	},
 	{
 		"name": "spend",
-		"type": "NUMERIC",
+		"type": "DECIMAL",
 		"mode": "NULLABLE"
 	},
 	{
